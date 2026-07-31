@@ -1,1 +1,67 @@
 
+import pandas as pd
+import numpy as np
+
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+import warnings
+warnings.filterwarnings('ignore')
+
+pd.set_option('display.max_columns', None)
+pd.set_option('display.max_rows', 100)
+
+
+
+# Read Excel File
+
+df = pd.read_excel("Employee_Master.xlsx")
+
+
+print("="*50)
+print("Employee Master Dataset")
+print("="*50)
+
+print(f"Number of Rows    : {df.shape[0]:,}")
+print(f"Number of Columns : {df.shape[1]}")
+
+print("\nDataset Shape :", df.shape)
+
+
+df.head()
+df.tail()
+
+df.sample(5, random_state=42)
+
+print("Total Columns :", len(df.columns))
+
+df.columns.tolist()
+
+
+df.info()
+
+
+df.dtypes
+
+
+missing = pd.DataFrame({
+    "Missing Count": df.isnull().sum(),
+    "Missing %": round(df.isnull().mean()*100,2)
+})
+
+missing = missing[missing["Missing Count"]>0]
+
+missing.sort_values("Missing %", ascending=False)
+
+
+
+print("Duplicate Rows :", df.duplicated().sum())
+
+print("Duplicate EMP_ID :", df["EMP_ID"].duplicated().sum())
+
+
+df.describe(include="all").T
+
+memory = df.memory_usage(deep=True).sum() / 1024**2
+
+print(f"Memory Used : {memory:.2f} MB")
