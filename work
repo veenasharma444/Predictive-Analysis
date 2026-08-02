@@ -1,1 +1,31 @@
 
+# Recreate Age Attrition Table
+age_attrition = pd.crosstab(
+    df["AGE_GROUP"],
+    df["ATTRITION"]
+)
+
+age_attrition.columns = ["Active", "Left"]
+
+age_attrition["Total"] = (
+    age_attrition["Active"] +
+    age_attrition["Left"]
+)
+
+age_attrition["Attrition %"] = (
+    age_attrition["Left"] /
+    age_attrition["Total"] * 100
+).round(2)
+
+print(age_attrition)
+
+
+
+
+# Export Age CSV
+age_attrition.reset_index().to_csv(
+    "age_attrition.csv",
+    index=False
+)
+
+print("age_attrition.csv saved successfully.")
