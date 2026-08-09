@@ -1,1 +1,185 @@
 
+# ==========================================================
+# STEP 25: BUILD X AND y FOR RANDOM FOREST
+# ==========================================================
+
+import pandas as pd
+import numpy as np
+
+print("=" * 70)
+print("STEP 25: BUILD MODEL INPUTS")
+print("=" * 70)
+
+
+# ==========================================================
+# 1. COPY MODEL DATA
+# ==========================================================
+
+rf_data = model_data.copy()
+
+
+# ==========================================================
+# 2. TARGET
+# ==========================================================
+
+y = rf_data["Attrition"].astype(int)
+
+X = rf_data.drop(
+    columns=["Attrition"]
+).copy()
+
+
+# ==========================================================
+# 3. CONVERT DATE FEATURES INTO NUMERIC FEATURES
+# ==========================================================
+
+date_columns = [
+    c for c in X.columns
+    if pd.api.types.is_datetime64_any_dtype(X[c])
+]
+
+
+print("\nDate columns to transform:")
+
+for c in date_columns:
+    print(" -", c)
+
+
+# Use a fixed reference date for reproducibility
+reference_date = pd.Timestamp("2026-08-07")
+
+
+for c in date_columns:
+
+    # Convert date to number of days from reference date
+    X[c + "_Days"] = (
+        reference_date - X[c]
+    ).dt.days
+
+    # Missing date indicator
+    X[c + "_Missing"] = (
+        X[c].isna()
+    ).astype(int)
+
+    # Remove original datetime column
+    X.drop(
+        columns=[c],
+        inplace=True
+    )
+
+
+# ==========================================================
+# 4. CHECK EFFECTIVE START DATE
+# ==========================================================
+
+# It was originally object, but Step 24 converted it.
+# If anything still remains as object but looks like a date,
+# we will handle it later rather than silently encoding it.
+
+
+# ==========================================================
+# 5. IDENTIFY CATEGORICAL / NUMERIC FEATURES
+# ==========================================================
+
+categorical_features = [
+    c for c in X.columns
+    if (
+        pd.api.types.is_object_dtype(X[c])
+        or pd.api.types.is_string_dtype(X[c])
+        or isinstance(X[c].dtype, pd.CategoricalDtype)
+    )
+]
+
+
+numeric_features = [
+    c for c in X.columns
+    if c not in categorical_features
+]
+
+
+# ==========================================================
+# 6. PRINT SUMMARY
+# ==========================================================
+
+print("\n" + "=" * 70)
+print("MODEL INPUT SUMMARY")
+print("=" * 70)
+
+print("X shape:", X.shape)
+print("y shape:", y.shape)
+
+print("\nTarget distribution:")
+print(y.value_counts())
+
+print("\nTarget percentages:")
+print(
+    y.value_counts(normalize=True)
+    .mul(100)
+    .round(2)
+)
+
+print("\nCategorical features:", len(categorical_features))
+print("Numeric features:", len(numeric_features))
+
+print("\nCategorical columns:")
+
+for i, c in enumerate(categorical_features, 1):
+    print(f"{i:3}. {c}")
+
+print("\nNumeric columns:")
+
+for i, c in enumerate(numeric_features, 1):
+    print(f"{i:3}. {c}")
+
+
+# ==========================================================
+# 7. CHECK REMAINING OBJECT COLUMNS
+# ==========================================================
+
+print("\n" + "=" * 70)
+print("REMAINING OBJECT / STRING COLUMNS")
+print("=" * 70)
+
+for c in categorical_features:
+
+    print(
+        f"{c}: "
+        f"dtype={X[c].dtype}, "
+        f"unique={X[c].nunique(dropna=True)}, "
+        f"missing={X[c].isna().sum()}"
+    )
+
+
+# ==========================================================
+# 8. FINAL SAFETY CHECK
+# ==========================================================
+
+print("\n" + "=" * 70)
+print("SAFETY CHECK")
+print("=" * 70)
+
+print("Target column present in X:", "Attrition" in X.columns)
+
+print(
+    "Employee identity columns accidentally present:",
+    [
+        c for c in [
+            "Employee Code",
+            "Employee_Code_Clean",
+            "_emp_code"
+        ]
+        if c in X.columns
+    ]
+)
+
+print(
+    "Resignation leakage columns present:",
+    [
+        c for c in [
+            "Resignation Date",
+            "Last Working Date",
+            "FNF Settlement Date"
+        ]
+        if c in X.columns
+    ]
+)
