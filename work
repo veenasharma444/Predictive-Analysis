@@ -1,1 +1,316 @@
 
+# ============================================================
+# STEP 56: FUTURE RESIGNATION PREDICTION
+# ============================================================
+
+import numpy as np
+import pandas as pd
+from sklearn.ensemble import RandomForestClassifier
+
+print("\n" + "=" * 60)
+print("STEP 56: FUTURE RESIGNATION PREDICTION")
+print("=" * 60)
+
+# ------------------------------------------------------------
+# 1. PREDICTION INPUT
+# ------------------------------------------------------------
+
+print("\nPREDICTION INPUT")
+print("-" * 60)
+
+print("Processed prediction shape:", X_prediction_processed.shape)
+print("Expected shape: (20468, 4354)")
+
+if X_prediction_processed.shape != (20468, 4354):
+    raise ValueError(
+        f"Unexpected prediction shape: "
+        f"{X_prediction_processed.shape}"
+    )
+
+print("Prediction data shape: VERIFIED")
+
+# ------------------------------------------------------------
+# 2. FIND TRAINED RANDOM FOREST
+# ------------------------------------------------------------
+
+print("\nMODEL CHECK")
+print("-" * 60)
+
+rf_candidates = []
+
+for name, obj in list(globals().items()):
+    try:
+        if isinstance(obj, RandomForestClassifier):
+            rf_candidates.append((name, obj))
+    except Exception:
+        pass
+
+print("Random Forest models found:")
+
+for name, obj in rf_candidates:
+    print(
+        f"  {name} -> "
+        f"{type(obj).__name__}, "
+        f"trees={obj.n_estimators}, "
+        f"features={obj.n_features_in_}"
+    )
+
+if len(rf_candidates) == 0:
+    raise RuntimeError(
+        "No RandomForestClassifier found. "
+        "The trained model is not available."
+    )
+
+# If exactly one RF exists, use it.
+# If multiple exist, prefer the one expecting 4354 features.
+
+matching_models = [
+    (name, obj)
+    for name, obj in rf_candidates
+    if getattr(obj, "n_features_in_", None) == 4354
+]
+
+if len(matching_models) == 1:
+    model_name, rf_model = matching_models[0]
+
+elif len(matching_models) > 1:
+    raise RuntimeError(
+        "Multiple Random Forest models expect 4354 features. "
+        "Please identify the correct trained model."
+    )
+
+else:
+    raise RuntimeError(
+        "No Random Forest model found that expects "
+        "4354 processed features."
+    )
+
+print("\nSelected trained model:", model_name)
+print("Number of trees:", rf_model.n_estimators)
+print("Model features:", rf_model.n_features_in_)
+
+# ------------------------------------------------------------
+# 3. VERIFY FEATURE COUNT
+# ------------------------------------------------------------
+
+if X_prediction_processed.shape[1] != rf_model.n_features_in_:
+    raise ValueError(
+        f"Feature mismatch: prediction has "
+        f"{X_prediction_processed.shape[1]} features, "
+        f"model expects {rf_model.n_features_in_}."
+    )
+
+print("\nFeature count: VERIFIED")
+
+# ------------------------------------------------------------
+# 4. GENERATE FUTURE RESIGNATION PROBABILITY
+# ------------------------------------------------------------
+
+print("\nGENERATING FUTURE RESIGNATION PROBABILITIES")
+print("-" * 60)
+
+prediction_probabilities = rf_model.predict_proba(
+    X_prediction_processed
+)[:, 1]
+
+print(
+    "Prediction probabilities generated:",
+    len(prediction_probabilities)
+)
+
+print(
+    "Minimum probability:",
+    round(prediction_probabilities.min(), 4)
+)
+
+print(
+    "Maximum probability:",
+    round(prediction_probabilities.max(), 4)
+)
+
+print(
+    "Mean probability:",
+    round(prediction_probabilities.mean(), 4)
+)
+
+# ------------------------------------------------------------
+# 5. APPLY BUSINESS THRESHOLD
+# ------------------------------------------------------------
+
+prediction_threshold = 0.50
+
+predicted_attrition = (
+    prediction_probabilities >= prediction_threshold
+).astype(int)
+
+print("\nPREDICTION THRESHOLD")
+print("-" * 60)
+
+print("Threshold:", prediction_threshold)
+
+print(
+    "Predicted future resignation cases:",
+    int(predicted_attrition.sum())
+)
+
+print(
+    "Predicted non-resignation cases:",
+    int((predicted_attrition == 0).sum())
+)
+
+# ------------------------------------------------------------
+# 6. CREATE RISK CATEGORY
+# ------------------------------------------------------------
+
+def get_risk_category(probability):
+
+    if probability >= 0.50:
+        return "High Risk"
+
+    elif probability >= 0.20:
+        return "Medium Risk"
+
+    else:
+        return "Low Risk"
+
+
+risk_categories = [
+    get_risk_category(p)
+    for p in prediction_probabilities
+]
+
+# ------------------------------------------------------------
+# 7. CREATE FINAL PREDICTION DATA
+# ------------------------------------------------------------
+
+prediction_results = model_data.copy()
+
+# IMPORTANT:
+# Historical Attrition is the target variable.
+# It must NOT be presented as the future prediction.
+
+if "Attrition" in prediction_results.columns:
+    prediction_results = prediction_results.drop(
+        columns=["Attrition"]
+    )
+
+prediction_results["Attrition_Probability"] = (
+    prediction_probabilities
+)
+
+prediction_results["Attrition_Probability_%"] = (
+    prediction_probabilities * 100
+).round(2)
+
+prediction_results["Predicted_Attrition"] = np.where(
+    predicted_attrition == 1,
+    "Yes",
+    "No"
+)
+
+prediction_results["Risk_Category"] = risk_categories
+
+# ------------------------------------------------------------
+# 8. VERIFY RESULT
+# ------------------------------------------------------------
+
+print("\n" + "=" * 60)
+print("FUTURE RESIGNATION PREDICTION SUMMARY")
+print("=" * 60)
+
+print(
+    "\nTotal employees evaluated:",
+    len(prediction_results)
+)
+
+print(
+    "Predicted future resignation:",
+    int(predicted_attrition.sum())
+)
+
+print(
+    "Predicted non-resignation:",
+    int((predicted_attrition == 0).sum())
+)
+
+print("\nRISK DISTRIBUTION")
+print("-" * 60)
+
+print(
+    prediction_results["Risk_Category"]
+    .value_counts()
+    .to_string()
+)
+
+# ------------------------------------------------------------
+# 9. TOP 20 HIGH-RISK EMPLOYEES
+# ------------------------------------------------------------
+
+print("\n" + "=" * 60)
+print("TOP 20 EMPLOYEES BY FUTURE RESIGNATION RISK")
+print("=" * 60)
+
+top_risk_employees = (
+    prediction_results
+    .sort_values(
+        "Attrition_Probability",
+        ascending=False
+    )
+    .head(20)
+)
+
+# Find useful employee/business columns automatically
+display_columns = []
+
+possible_columns = [
+    "Employee Code",
+    "Employee ID",
+    "Employee Name",
+    "Name",
+    "Title",
+    "Designation",
+    "Department",
+    "Reporting Manager Name",
+    "Site Name",
+    "Cost Center",
+    "Site Cost Center",
+    "Client Vertical",
+    "Monthly Gross Salary",
+    "Annual_Gross_Salary",
+    "Tenure_Years",
+    "Age_Years",
+    "Leave_Balance",
+    "Attrition_Probability_%",
+    "Predicted_Attrition",
+    "Risk_Category"
+]
+
+for col in possible_columns:
+
+    if col in top_risk_employees.columns:
+        display_columns.append(col)
+
+display(
+    top_risk_employees[display_columns]
+)
+
+# ------------------------------------------------------------
+# 10. SAVE FINAL PREDICTIONS
+# ------------------------------------------------------------
+
+prediction_results = prediction_results.sort_values(
+    "Attrition_Probability",
+    ascending=False
+)
+
+prediction_results.to_csv(
+    "future_resignation_predictions.csv",
+    index=False
+)
+
+print("\nSaved as:")
+print("future_resignation_predictions.csv")
+
+print("\n" + "=" * 60)
+print("STEP 56 SUCCESS")
+print("=" * 60)
