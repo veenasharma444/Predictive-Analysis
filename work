@@ -1,1 +1,47 @@
 
+# ============================================================
+# STEP 51: FINAL PREDICTION DATA - PIPELINE COMPATIBILITY CHECK
+# ============================================================
+
+print("=" * 60)
+print("STEP 51: PREDICTION PIPELINE COMPATIBILITY CHECK")
+print("=" * 60)
+
+print("\nMODEL DATA")
+print("-" * 60)
+print("Shape:", model_data.shape)
+
+print("\nTraining feature count:", len(X_train_clean.columns))
+print("Training feature count:", X_train_clean.shape[1])
+
+print("\nMissing training features in model_data:")
+missing_features = [
+    col for col in X_train_clean.columns
+    if col not in model_data.columns
+]
+
+print("Count:", len(missing_features))
+
+for i, col in enumerate(missing_features, 1):
+    print(f"{i:02d}. {col}")
+
+
+print("\n" + "=" * 60)
+print("RAW COLUMNS AVAILABLE IN MODEL_DATA")
+print("=" * 60)
+
+for i, col in enumerate(model_data.columns, 1):
+    print(f"{i:02d}. {col}")
+
+
+print("\n" + "=" * 60)
+print("TRAINING FEATURES")
+print("=" * 60)
+
+for i, col in enumerate(X_train_clean.columns, 1):
+    print(f"{i:02d}. {col}")
+
+
+print("\n" + "=" * 60)
+print("STEP 51 DIAGNOSTIC COMPLETE")
+print("=" * 60)
