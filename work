@@ -1,134 +1,172 @@
+============================================================
+STEP 33: REBUILD MODEL INPUTS
+============================================================
 
-# ============================================================
-# STEP 33: REBUILD MODEL INPUTS AFTER LEAKAGE REMOVAL
-# ============================================================
+X shape: (20468, 138)
+y shape: (20468,)
 
-print("=" * 60)
-print("STEP 33: REBUILD MODEL INPUTS")
-print("=" * 60)
+Target distribution:
+Attrition
+0    20245
+1      223
+Name: count, dtype: int64
 
-# ------------------------------------------------------------
-# 1. Separate target
-# ------------------------------------------------------------
+Target percentage:
+Attrition
+0    98.91
+1     1.09
+Name: proportion, dtype: float64
 
-y_clean = model_base_clean["Attrition"].copy()
+Leakage columns still present:
+['Resignation Date', 'Last Working Date', 'FNF Settlement Date', 'Employee Status', 'Leave Status', 'Effective End Date']
 
-X_clean = model_base_clean.drop(
-    columns=["Attrition"],
-    errors="ignore"
-).copy()
+Employee identity columns still present:
+['Employee Code', 'Employee_Code_Clean', '_emp_code', 'First Name', 'Middle Name', 'Last Name', 'Employee Name', 'Official Email Address', 'Personal Email Address']
 
-# ------------------------------------------------------------
-# 2. Safety checks
-# ------------------------------------------------------------
+Movement Type present: False
 
-print("\nX shape:", X_clean.shape)
-print("y shape:", y_clean.shape)
+============================================================
+FEATURE TYPE SUMMARY
+============================================================
 
-print("\nTarget distribution:")
-print(y_clean.value_counts())
+Date features: 8
+- Actual Join Date
+- Group Join Date
+- Confirmation Date
+- Effective Start Date
+- Conf. Date (Period Master)
+- Birth Date
+- Date Of Joined
+- Created Date
 
-print("\nTarget percentage:")
-print(
-    y_clean.value_counts(normalize=True).mul(100).round(2)
-)
+Categorical features: 79
+- Group
+- Company Name
+- Employee Code
+- Title
+- First Name
+- Middle Name
+- Last Name
+- Employee Name
+- Gender
+- Nationality
+- Official Email Address
+- Personal Email Address
+- Resident Type
+- Marital Status
+- City Name
+- State Name
+- Branch
+- Site Branch
+- Division
+- Designation
+- Department
+- Sub Department
+- Cost Center
+- Site Cost Center
+- Site Name
+- Grade
+- Band
+- Reason for Requirement
+- Employee Category
+- Employee Status
+- Reporting Manager Code
+- Reporting Manager Name
+- Skip Level Manager Code
+- Skip Level Manager
+- Physical Disability
+- Point of Hire
+- Point of Repatriation
+- ESIC Flag
+- PF Applicable
+- PF Type
+- PF Number
+- UAN Number
+- Probation Status
+- Source of Hire
+- Preferred Name
+- Dual Nationality
+- Religion
+- Employee Air Ticket
+- Air Ticket frequency
+- Blood Group
+- Group Medical Insurance
+- Confidential Profile Flag
+- 2nd Nationality
+- Bank Name
+- PAN Number
+- Aadhar Card No
+- Account Number
+- IFSC Code
+- Father Name
+- Cost Code
+- Client Vertical
+- Permanent Address
+- Current Address
+- Correspondence Address
+- Resident
+- Wage Type
+- TAX Regime
+- Uniform Deduction
+- Employee_Code_Clean
+- _emp_code
+- Employee Status_form
+- Designation_form
+- Cost Center_form
+- Gender_form
+- Marital Status_form
+- Location
+- Region Name
+- Site Name_form
+- Client Verticle
 
-# ------------------------------------------------------------
-# 3. Check for leakage / identity columns
-# ------------------------------------------------------------
+Numeric features: 47
+- Year Of Service (Current DOJ)
+- Year of Service (Group DOJ)
+- ESIC Number
+- Agreement type
+- Effective End Date
+- Air Ticket Class
+- Confidential Profile
+- Employer Notice Period
+- Personal Mobile Number
+- Emergency Contact Number
+- Profit Code
+- Leave Status
+- Process Name
+- Monthly Gross Salary
+- Annual_Gross_Salary
+- Tenure_Days
+- Tenure_Years
+- OT1_Chargeable_OT
+- OT1_NonChargeable_OT
+- OT1_Total_OT
+- OT1_OT_Days
+- OT1_Avg_Daily_OT
+- OT1_Max_Daily_OT
+- OT2_Chargeable_OT
+- OT2_NonChargeable_OT
+- OT2_Total_OT
+- OT3_Chargeable_OT
+- OT3_NonChargeable_OT
+- OT3_Total_OT
+- OT4_Chargeable_OT
+- OT4_NonChargeable_OT
+- OT4_Total_OT
+- OT4_OT_Days
+- OT4_Avg_Daily_OT
+- OT4_Max_Daily_OT
+- Leave_Opening_Balance
+- Leave_Accrued
+- Leave_Consumed
+- Leave_Adjustment
+- Leave_Lapse
+- Leave_Balance
+- Leave_Future_Approved
+- Leave_Balance_After_Future
+- Leave_Encashment
+- Leave_Carry_Forward
+- Leave_Record_Count
+- Leave_Type_Count
 
-leakage_check = [
-    "Attrition",
-    "Resignation Date",
-    "Last Working Date",
-    "FNF Settlement Date",
-    "Employee Status",
-    "Leave Status",
-    "Effective End Date",
-    "Movement Type"
-]
-
-identity_check = [
-    "Employee Code",
-    "Employee_Code_Clean",
-    "_emp_code",
-    "First Name",
-    "Middle Name",
-    "Last Name",
-    "Employee Name",
-    "Official Email Address",
-    "Personal Email Address"
-]
-
-print("\nLeakage columns still present:")
-print([
-    col for col in leakage_check
-    if col in X_clean.columns
-])
-
-print("\nEmployee identity columns still present:")
-print([
-    col for col in identity_check
-    if col in X_clean.columns
-])
-
-# ------------------------------------------------------------
-# 4. Verify Movement Type is gone
-# ------------------------------------------------------------
-
-assert "Movement Type" not in X_clean.columns
-
-print("\nMovement Type present:", "Movement Type" in X_clean.columns)
-
-# ------------------------------------------------------------
-# 5. Separate feature types
-# ------------------------------------------------------------
-
-date_columns_clean = [
-    col for col in [
-        "Actual Join Date",
-        "Group Join Date",
-        "Confirmation Date",
-        "Effective Start Date",
-        "Conf. Date (Period Master)",
-        "Birth Date",
-        "Date Of Joined",
-        "Created Date"
-    ]
-    if col in X_clean.columns
-]
-
-categorical_columns_clean = X_clean.select_dtypes(
-    include=["object", "string", "category"]
-).columns.tolist()
-
-# Remove date columns from categorical list
-categorical_columns_clean = [
-    col for col in categorical_columns_clean
-    if col not in date_columns_clean
-]
-
-numeric_columns_clean = X_clean.select_dtypes(
-    include=["number", "bool"]
-).columns.tolist()
-
-print("\n" + "=" * 60)
-print("FEATURE TYPE SUMMARY")
-print("=" * 60)
-
-print("\nDate features:", len(date_columns_clean))
-for col in date_columns_clean:
-    print("-", col)
-
-print("\nCategorical features:", len(categorical_columns_clean))
-for col in categorical_columns_clean:
-    print("-", col)
-
-print("\nNumeric features:", len(numeric_columns_clean))
-for col in numeric_columns_clean:
-    print("-", col)
-
-print("\nTotal features accounted for:",
-      len(date_columns_clean)
-      + len(categorical_columns_clean)
-      + len(numeric_columns_clean))
+Total features accounted for: 134
