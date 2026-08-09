@@ -1,1 +1,294 @@
 
+# ============================================================
+# STEP 57: FINAL BUSINESS OUTPUT
+# ============================================================
+
+import pandas as pd
+import numpy as np
+import os
+
+print("\n" + "=" * 70)
+print("STEP 57: FINAL FUTURE RESIGNATION BUSINESS OUTPUT")
+print("=" * 70)
+
+# ------------------------------------------------------------
+# 1. LOAD THE PREDICTION FILE CREATED IN STEP 56
+# ------------------------------------------------------------
+
+prediction_file = "future_resignation_predictions.csv"
+
+if not os.path.exists(prediction_file):
+    raise FileNotFoundError(
+        f"{prediction_file} was not found. "
+        "Please run Step 56 first."
+    )
+
+final_predictions = pd.read_csv(prediction_file)
+
+print("\nPrediction file loaded:")
+print("Shape:", final_predictions.shape)
+
+# ------------------------------------------------------------
+# 2. DISPLAY AVAILABLE COLUMNS
+# ------------------------------------------------------------
+
+print("\nAvailable prediction columns:")
+print(final_predictions.columns.tolist())
+
+# ------------------------------------------------------------
+# 3. IDENTIFY PROBABILITY COLUMN
+# ------------------------------------------------------------
+
+probability_candidates = [
+    "Future_Resignation_Probability",
+    "Resignation_Probability",
+    "Future_Resignation_Prob",
+    "Prediction_Probability",
+    "Probability",
+    "Attrition_Probability"
+]
+
+probability_column = None
+
+for col in probability_candidates:
+    if col in final_predictions.columns:
+        probability_column = col
+        break
+
+if probability_column is None:
+    raise ValueError(
+        "Could not identify the resignation probability column. "
+        "Check the column list printed above."
+    )
+
+print("\nProbability column:", probability_column)
+
+# ------------------------------------------------------------
+# 4. IDENTIFY / CREATE RISK CATEGORY
+# ------------------------------------------------------------
+
+risk_candidates = [
+    "Risk_Category",
+    "Future_Resignation_Risk",
+    "Risk",
+    "Attrition_Risk"
+]
+
+risk_column = None
+
+for col in risk_candidates:
+    if col in final_predictions.columns:
+        risk_column = col
+        break
+
+if risk_column is None:
+
+    # Create risk category from probability
+    def assign_risk(probability):
+        if probability >= 0.50:
+            return "High Risk"
+        elif probability >= 0.20:
+            return "Medium Risk"
+        else:
+            return "Low Risk"
+
+    final_predictions["Risk_Category"] = (
+        final_predictions[probability_column]
+        .apply(assign_risk)
+    )
+
+    risk_column = "Risk_Category"
+
+# ------------------------------------------------------------
+# 5. STANDARDIZE PROBABILITY
+# ------------------------------------------------------------
+
+final_predictions[probability_column] = pd.to_numeric(
+    final_predictions[probability_column],
+    errors="coerce"
+)
+
+# If probability is stored as percentage (e.g. 86.88)
+# convert it to decimal (0.8688)
+if final_predictions[probability_column].max() > 1:
+    final_predictions[probability_column] = (
+        final_predictions[probability_column] / 100
+    )
+
+final_predictions["Resignation_Probability_%"] = (
+    final_predictions[probability_column] * 100
+).round(2)
+
+# ------------------------------------------------------------
+# 6. CREATE RISK RANK
+# ------------------------------------------------------------
+
+final_predictions = final_predictions.sort_values(
+    by=probability_column,
+    ascending=False
+).reset_index(drop=True)
+
+final_predictions["Risk_Rank"] = (
+    final_predictions.index + 1
+)
+
+# ------------------------------------------------------------
+# 7. CREATE FINAL BUSINESS DATASET
+# ------------------------------------------------------------
+
+# Keep useful employee/business columns if they exist
+preferred_columns = [
+    "Employee ID",
+    "Employee_ID",
+    "Employee Code",
+    "Employee_Code",
+    "Title",
+    "Designation",
+    "Department",
+    "Reporting Manager Name",
+    "Site Name",
+    "Cost Center",
+    "Site Cost Center",
+    "Client Vertical",
+    "Monthly Gross Salary",
+    "Annual_Gross_Salary",
+    "Tenure_Years",
+    "Calculated_Tenure_Years",
+    "Leave_Balance",
+    "Leave_Consumed",
+    "Leave_Future_Approved",
+    "OT1_Total_OT",
+    "OT2_Total_OT",
+    "OT3_Total_OT",
+    "OT4_Total_OT",
+    "Salary_Data_Available",
+    "Leave_Data_Available",
+    "Resignation_Probability_%",
+    "Risk_Category",
+    "Risk_Rank"
+]
+
+available_columns = [
+    col for col in preferred_columns
+    if col in final_predictions.columns
+]
+
+final_business_output = final_predictions[available_columns].copy()
+
+# ------------------------------------------------------------
+# 8. IF NO EMPLOYEE ID EXISTS, PRESERVE ORIGINAL ROW ID
+# ------------------------------------------------------------
+
+id_columns = [
+    "Employee ID",
+    "Employee_ID",
+    "Employee Code",
+    "Employee_Code"
+]
+
+if not any(col in final_business_output.columns for col in id_columns):
+
+    # Use original prediction row number as reference
+    final_business_output.insert(
+        0,
+        "Employee_Row_ID",
+        np.arange(1, len(final_business_output) + 1)
+    )
+
+# ------------------------------------------------------------
+# 9. FINAL SUMMARY
+# ------------------------------------------------------------
+
+print("\n" + "=" * 70)
+print("FINAL FUTURE RESIGNATION PREDICTION SUMMARY")
+print("=" * 70)
+
+print(
+    "\nTotal employees evaluated:",
+    len(final_business_output)
+)
+
+print(
+    "Predicted High Risk:",
+    (final_predictions[risk_column] == "High Risk").sum()
+)
+
+print(
+    "Predicted Medium Risk:",
+    (final_predictions[risk_column] == "Medium Risk").sum()
+)
+
+print(
+    "Predicted Low Risk:",
+    (final_predictions[risk_column] == "Low Risk").sum()
+)
+
+print(
+    "\nAverage resignation probability:",
+    round(
+        final_predictions[probability_column].mean() * 100,
+        2
+    ),
+    "%"
+)
+
+print(
+    "Maximum resignation probability:",
+    round(
+        final_predictions[probability_column].max() * 100,
+        2
+    ),
+    "%"
+)
+
+# ------------------------------------------------------------
+# 10. RISK DISTRIBUTION
+# ------------------------------------------------------------
+
+print("\nRISK DISTRIBUTION")
+print("-" * 50)
+
+risk_distribution = (
+    final_predictions[risk_column]
+    .value_counts()
+    .reindex(
+        ["High Risk", "Medium Risk", "Low Risk"],
+        fill_value=0
+    )
+)
+
+print(risk_distribution)
+
+# ------------------------------------------------------------
+# 11. TOP 20 HIGH-RISK EMPLOYEES
+# ------------------------------------------------------------
+
+print("\n" + "=" * 70)
+print("TOP 20 EMPLOYEES BY FUTURE RESIGNATION RISK")
+print("=" * 70)
+
+display(
+    final_business_output.head(20)
+)
+
+# ------------------------------------------------------------
+# 12. SAVE FINAL BUSINESS OUTPUT
+# ------------------------------------------------------------
+
+output_file = "final_future_resignation_predictions.csv"
+
+final_business_output.to_csv(
+    output_file,
+    index=False
+)
+
+print("\n" + "=" * 70)
+print("FINAL OUTPUT FILE CREATED")
+print("=" * 70)
+
+print("\nFile:", output_file)
+print("Rows:", len(final_business_output))
+print("Columns:", len(final_business_output.columns))
+
+print("\nSTEP 57 SUCCESS")
+print("=" * 70)
