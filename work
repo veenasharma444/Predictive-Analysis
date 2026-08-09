@@ -1,1 +1,102 @@
 
+# ============================================================
+# STEP 52: IDENTIFY DATE FEATURE ENGINEERING USED IN TRAINING
+# ============================================================
+
+print("=" * 60)
+print("STEP 52: DATE FEATURE ENGINEERING VALIDATION")
+print("=" * 60)
+
+date_feature_pairs = {
+    "Actual Join Date": [
+        "Actual Join Date_Days",
+        "Actual Join Date_Missing"
+    ],
+    "Group Join Date": [
+        "Group Join Date_Days",
+        "Group Join Date_Missing"
+    ],
+    "Confirmation Date": [
+        "Confirmation Date_Missing"
+    ],
+    "Effective Start Date": [
+        "Effective Start Date_Days",
+        "Effective Start Date_Missing"
+    ],
+    "Conf. Date (Period Master)": [
+        "Conf. Date (Period Master)_Missing"
+    ],
+    "Birth Date": [
+        "Birth Date_Days",
+        "Birth Date_Missing"
+    ],
+    "Date Of Joined": [
+        "Date Of Joined_Days",
+        "Date Of Joined_Missing"
+    ],
+    "Created Date": [
+        "Created Date_Days",
+        "Created Date_Missing"
+    ]
+}
+
+print("\nTraining engineered date features:")
+print("-" * 60)
+
+for raw_col, engineered_cols in date_feature_pairs.items():
+
+    print(f"\nRAW COLUMN: {raw_col}")
+
+    if raw_col in model_data.columns:
+        print("Raw column exists in model_data")
+
+        raw_values = pd.to_datetime(
+            model_data[raw_col],
+            errors="coerce"
+        )
+
+        print("Non-null dates:", raw_values.notna().sum())
+        print("Min date:", raw_values.min())
+        print("Max date:", raw_values.max())
+
+    else:
+        print("Raw column NOT available in model_data")
+
+    for feature in engineered_cols:
+
+        if feature in X_train_clean.columns:
+
+            values = X_train_clean[feature]
+
+            print(f"\n  {feature}")
+            print("  dtype:", values.dtype)
+            print("  min:", values.min())
+            print("  max:", values.max())
+            print("  unique sample:",
+                  values.dropna().unique()[:10])
+
+        else:
+            print(f"  {feature} NOT FOUND in X_train_clean")
+
+
+print("\n" + "=" * 60)
+print("POINT OF HIRE / REPATRIATION")
+print("=" * 60)
+
+for col in ["Point of Hire", "Point of Repatriation"]:
+
+    print(f"\n{col}")
+
+    if col in X_train_clean.columns:
+        print("Present in training data")
+        print("dtype:", X_train_clean[col].dtype)
+        print("Unique values:")
+        print(X_train_clean[col].value_counts(dropna=False).head(20))
+
+    else:
+        print("NOT FOUND")
+
+
+print("\n" + "=" * 60)
+print("STEP 52 COMPLETE")
+print("=" * 60)
