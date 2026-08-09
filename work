@@ -1,1 +1,11 @@
 
+employee_codes = normalize_emp_code(employee_master["Employee Code"])
+resignation_codes = normalize_emp_code(resignation_data["Employee Code"])
+
+ot1_codes = normalize_emp_code(overtime_data1["EMP CODE"])
+ot2_codes = normalize_emp_code(overtime_data2["EMP CODE"])
+ot3_codes = normalize_emp_code(overtime_data_3["EMP CODE"])
+ot4_codes = normalize_emp_code(overtime_data4["EMP CODE"])
+
+leave_codes = normalize_emp_code(leave_data["Employee Code"])
+form_codes = normalize_emp_code(form_data["Employee Code"])
