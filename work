@@ -1,185 +1,30 @@
-# ============================================================
-# STEP 34: REBUILD FINAL CLEAN MODEL DATASET
-# ============================================================
+============================================================
+STEP 34: REBUILD FINAL CLEAN MODEL DATASET
+============================================================
 
-print("=" * 60)
-print("STEP 34: REBUILD FINAL CLEAN MODEL DATASET")
-print("=" * 60)
+Number of final clean features: 78
 
-# ------------------------------------------------------------
-# FINAL CLEAN FEATURES FROM STEP 21
-# ------------------------------------------------------------
+============================================================
+CLEAN MODEL DATASET
+============================================================
 
-final_clean_features = [
-    "Title",
-    "City Name",
-    "State Name",
-    "Branch",
-    "Site Branch",
-    "Designation",
-    "Department",
-    "Cost Center",
-    "Site Cost Center",
-    "Site Name",
-    "Grade",
-    "Band",
-    "Reason for Requirement",
-    "Employee Category",
-    "Reporting Manager Code",
-    "Reporting Manager Name",
-    "Skip Level Manager Code",
-    "Skip Level Manager",
-    "Actual Join Date",
-    "Group Join Date",
-    "Year Of Service (Current DOJ)",
-    "Year of Service (Group DOJ)",
-    "Point of Hire",
-    "Point of Repatriation",
-    "ESIC Flag",
-    "PF Applicable",
-    "PF Type",
-    "Probation Status",
-    "Confirmation Date",
-    "Source of Hire",
-    "Effective Start Date",
-    "Conf. Date (Period Master)",
-    "Employer Notice Period",
-    "Bank Name",
-    "Birth Date",
-    "Cost Code",
-    "Profit Code",
-    "Client Vertical",
-    "Resident",
-    "Wage Type",
-    "TAX Regime",
-    "Uniform Deduction",
-    "Location",
-    "Region Name",
-    "Client Verticle",
-    "Date Of Joined",
-    "Created Date",
-    "Monthly Gross Salary",
-    "Annual_Gross_Salary",
-    "Tenure_Days",
-    "Tenure_Years",
-    "OT1_Chargeable_OT",
-    "OT1_NonChargeable_OT",
-    "OT1_Total_OT",
-    "OT1_OT_Days",
-    "OT1_Avg_Daily_OT",
-    "OT1_Max_Daily_OT",
-    "OT2_Chargeable_OT",
-    "OT2_NonChargeable_OT",
-    "OT2_Total_OT",
-    "OT3_Chargeable_OT",
-    "OT3_NonChargeable_OT",
-    "OT3_Total_OT",
-    "OT4_Chargeable_OT",
-    "OT4_NonChargeable_OT",
-    "OT4_Total_OT",
-    "OT4_OT_Days",
-    "OT4_Avg_Daily_OT",
-    "OT4_Max_Daily_OT",
-    "Leave_Opening_Balance",
-    "Leave_Accrued",
-    "Leave_Consumed",
-    "Leave_Balance",
-    "Leave_Future_Approved",
-    "Leave_Balance_After_Future",
-    "Leave_Carry_Forward",
-    "Leave_Record_Count",
-    "Leave_Type_Count"
-]
+Shape: (20468, 79)
 
-# ------------------------------------------------------------
-# CHECK
-# ------------------------------------------------------------
+Target distribution:
+Attrition
+0    20245
+1      223
+Name: count, dtype: int64
 
-print("\nNumber of final clean features:", len(final_clean_features))
+Target percentage:
+Attrition
+0    98.91
+1     1.09
+Name: proportion, dtype: float64
 
-# Make sure Movement Type is NOT included
-assert "Movement Type" not in final_clean_features
+Forbidden/leakage/identity columns present:
+[]
 
-# Make sure target is NOT included
-assert "Attrition" not in final_clean_features
+Movement Type present: False
 
-# ------------------------------------------------------------
-# KEEP ONLY CLEAN FEATURES + TARGET
-# ------------------------------------------------------------
-
-model_data_clean = model_base[
-    ["Attrition"] + final_clean_features
-].copy()
-
-# ------------------------------------------------------------
-# OUTPUT
-# ------------------------------------------------------------
-
-print("\n" + "=" * 60)
-print("CLEAN MODEL DATASET")
-print("=" * 60)
-
-print("\nShape:", model_data_clean.shape)
-
-print("\nTarget distribution:")
-print(model_data_clean["Attrition"].value_counts())
-
-print("\nTarget percentage:")
-print(
-    model_data_clean["Attrition"]
-    .value_counts(normalize=True)
-    .mul(100)
-    .round(2)
-)
-
-# ------------------------------------------------------------
-# SAFETY CHECK
-# ------------------------------------------------------------
-
-forbidden_columns = [
-    "Movement Type",
-    "Resignation Date",
-    "Last Working Date",
-    "FNF Settlement Date",
-    "Employee Status",
-    "Leave Status",
-    "Effective End Date",
-    "Employee Code",
-    "Employee_Code_Clean",
-    "_emp_code",
-    "First Name",
-    "Middle Name",
-    "Last Name",
-    "Employee Name",
-    "Official Email Address",
-    "Personal Email Address",
-    "Personal Mobile Number",
-    "Emergency Contact Number",
-    "PAN Number",
-    "Aadhar Card No",
-    "Account Number",
-    "IFSC Code",
-    "PF Number",
-    "UAN Number",
-    "ESIC Number",
-    "Father Name",
-    "Permanent Address",
-    "Current Address",
-    "Correspondence Address"
-]
-
-forbidden_present = [
-    col for col in forbidden_columns
-    if col in model_data_clean.columns
-]
-
-print("\nForbidden/leakage/identity columns present:")
-print(forbidden_present)
-
-print("\nMovement Type present:",
-      "Movement Type" in model_data_clean.columns)
-
-assert len(forbidden_present) == 0
-assert "Movement Type" not in model_data_clean.columns
-
-print("\nSTEP 34 SUCCESS")
+STEP 34 SUCCESS
