@@ -1,1 +1,85 @@
 
+# ============================================================
+# STEP 38: INSPECT NON-NUMERIC AND MISSING FEATURES
+# ============================================================
+
+print("=" * 60)
+print("STEP 38: FEATURE TYPE & MISSING VALUE INSPECTION")
+print("=" * 60)
+
+
+# ------------------------------------------------------------
+# 1. Non-numeric columns
+# ------------------------------------------------------------
+
+non_numeric_cols = X_train.select_dtypes(
+    exclude=["number"]
+).columns.tolist()
+
+print("\n" + "=" * 60)
+print("NON-NUMERIC COLUMNS")
+print("=" * 60)
+
+print("Count:", len(non_numeric_cols))
+
+for i, col in enumerate(non_numeric_cols, 1):
+    print(f"{i:02d}. {col}")
+
+
+# ------------------------------------------------------------
+# 2. Missing values by column
+# ------------------------------------------------------------
+
+missing_summary = X_train.isna().sum()
+
+missing_summary = missing_summary[
+    missing_summary > 0
+].sort_values(ascending=False)
+
+
+print("\n" + "=" * 60)
+print("MISSING VALUES BY COLUMN")
+print("=" * 60)
+
+print(missing_summary.to_string())
+
+
+# ------------------------------------------------------------
+# 3. Missing percentage
+# ------------------------------------------------------------
+
+missing_percentage = (
+    X_train.isna().mean() * 100
+).sort_values(ascending=False)
+
+missing_percentage = missing_percentage[
+    missing_percentage > 0
+]
+
+
+print("\n" + "=" * 60)
+print("MISSING PERCENTAGE BY COLUMN")
+print("=" * 60)
+
+print(missing_percentage.round(2).to_string())
+
+
+# ------------------------------------------------------------
+# 4. High-missing columns
+# ------------------------------------------------------------
+
+high_missing = missing_percentage[
+    missing_percentage >= 50
+]
+
+print("\n" + "=" * 60)
+print("COLUMNS WITH >= 50% MISSING VALUES")
+print("=" * 60)
+
+print("Count:", len(high_missing))
+print(high_missing.round(2).to_string())
+
+
+print("\n" + "=" * 60)
+print("STEP 38 COMPLETE")
+print("=" * 60)
