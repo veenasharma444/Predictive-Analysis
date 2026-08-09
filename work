@@ -1,1 +1,163 @@
+# ==========================================================
+# STEP 29: RANDOM FOREST FEATURE IMPORTANCE
+# ==========================================================
 
+import pandas as pd
+import numpy as np
+
+print("=" * 60)
+print("STEP 29: RANDOM FOREST FEATURE IMPORTANCE")
+print("=" * 60)
+
+
+# ==========================================================
+# 1. GET FEATURE IMPORTANCE FROM RANDOM FOREST
+# ==========================================================
+
+encoded_importance = rf_model.feature_importances_
+
+print("\nNumber of encoded features:",
+      len(encoded_importance))
+
+
+# ==========================================================
+# 2. GET ENCODED FEATURE NAMES
+# ==========================================================
+
+encoded_feature_names = preprocessor.get_feature_names_out()
+
+print("Number of encoded feature names:",
+      len(encoded_feature_names))
+
+
+# Safety check
+assert len(encoded_importance) == len(encoded_feature_names), \
+    "Feature importance and feature names count do not match."
+
+
+# ==========================================================
+# 3. CREATE ENCODED IMPORTANCE DATAFRAME
+# ==========================================================
+
+importance_df = pd.DataFrame({
+    "Encoded_Feature": encoded_feature_names,
+    "Importance": encoded_importance
+})
+
+
+# ==========================================================
+# 4. MAP ENCODED FEATURES BACK TO ORIGINAL FEATURES
+# ==========================================================
+
+def get_original_feature(encoded_name):
+
+    # Remove ColumnTransformer prefix
+    if "__" in encoded_name:
+        encoded_name = encoded_name.split("__", 1)[1]
+
+    # Check categorical features first
+    for col in categorical_features:
+        if encoded_name == col or encoded_name.startswith(col + "_"):
+            return col
+
+    # Check numeric features
+    for col in numeric_features:
+        if encoded_name == col:
+            return col
+
+    # Fallback
+    return encoded_name
+
+
+importance_df["Original_Feature"] = (
+    importance_df["Encoded_Feature"]
+    .apply(get_original_feature)
+)
+
+
+# ==========================================================
+# 5. AGGREGATE IMPORTANCE
+# ==========================================================
+
+feature_importance = (
+    importance_df
+    .groupby("Original_Feature", as_index=False)["Importance"]
+    .sum()
+    .sort_values(
+        "Importance",
+        ascending=False
+    )
+    .reset_index(drop=True)
+)
+
+
+# ==========================================================
+# 6. CONVERT TO PERCENTAGE
+# ==========================================================
+
+feature_importance["Importance_%"] = (
+    feature_importance["Importance"] * 100
+)
+
+
+# ==========================================================
+# 7. ADD RANK
+# ==========================================================
+
+feature_importance.insert(
+    0,
+    "Rank",
+    range(1, len(feature_importance) + 1)
+)
+
+
+# ==========================================================
+# 8. DISPLAY TOP 30 PREDICTIVE FACTORS
+# ==========================================================
+
+print("\n" + "=" * 60)
+print("TOP 30 PREDICTIVE FACTORS")
+print("=" * 60)
+
+print(
+    feature_importance[
+        [
+            "Rank",
+            "Original_Feature",
+            "Importance",
+            "Importance_%"
+        ]
+    ].head(30).to_string(index=False)
+)
+
+
+# ==========================================================
+# 9. CHECK TOTAL IMPORTANCE
+# ==========================================================
+
+print("\n" + "=" * 60)
+print("IMPORTANCE CHECK")
+print("=" * 60)
+
+print(
+    "Total encoded importance:",
+    encoded_importance.sum()
+)
+
+print(
+    "Total aggregated importance:",
+    feature_importance["Importance"].sum()
+)
+
+
+# ==========================================================
+# 10. SAVE FEATURE IMPORTANCE
+# ==========================================================
+
+feature_importance.to_excel(
+    "random_forest_feature_importance.xlsx",
+    index=False
+)
+
+print("\nSaved:")
+print("random_forest_feature_importance.xlsx")
