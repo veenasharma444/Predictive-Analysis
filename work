@@ -1,106 +1,61 @@
-# ============================================================
-# STEP 43: RANDOM FOREST PREDICTIONS
-# ============================================================
+============================================================
+STEP 43: RANDOM FOREST PREDICTIONS
+============================================================
 
-print("=" * 60)
-print("STEP 43: RANDOM FOREST PREDICTIONS")
-print("=" * 60)
+Prediction completed successfully.
 
+Prediction shape:
+y_pred: (4094,)
 
-# ------------------------------------------------------------
-# 1. Predict class
-# ------------------------------------------------------------
+Probability shape:
+y_pred_proba: (4094,)
 
-y_pred = rf_model.predict(
-    X_test_processed
-)
+============================================================
+ACTUAL TARGET DISTRIBUTION
+============================================================
+Attrition
+0    4049
+1      45
+Name: count, dtype: int64
 
+============================================================
+PREDICTED TARGET DISTRIBUTION
+============================================================
+0    4062
+1      32
+Name: count, dtype: int64
 
-# ------------------------------------------------------------
-# 2. Predict probability of attrition
-# ------------------------------------------------------------
+============================================================
+ATTRITION PROBABILITY SUMMARY
+============================================================
+count    4094.000000
+mean        0.060735
+std         0.095174
+min         0.000000
+25%         0.009672
+50%         0.023738
+75%         0.069018
+max         0.986774
+dtype: float64
 
-y_pred_proba = rf_model.predict_proba(
-    X_test_processed
-)[:, 1]
+Minimum probability: 0.0
+Maximum probability: 0.9867743614909473
 
+============================================================
+SAMPLE PREDICTIONS
+============================================================
+   Actual_Attrition  Predicted_Attrition  Attrition_Probability
+0                 0                    0               0.002345
+1                 0                    0               0.028397
+2                 0                    0               0.016225
+3                 0                    0               0.098298
+4                 0                    0               0.089484
+5                 0                    0               0.015619
+6                 0                    0               0.006587
+7                 0                    0               0.198881
+8                 0                    0               0.166293
+9                 0                    0               0.038737
 
-# ------------------------------------------------------------
-# 3. Basic validation
-# ------------------------------------------------------------
-
-print("\nPrediction completed successfully.")
-
-print("\nPrediction shape:")
-print("y_pred:", y_pred.shape)
-
-print("\nProbability shape:")
-print("y_pred_proba:", y_pred_proba.shape)
-
-
-# ------------------------------------------------------------
-# 4. Actual vs predicted distribution
-# ------------------------------------------------------------
-
-print("\n" + "=" * 60)
-print("ACTUAL TARGET DISTRIBUTION")
-print("=" * 60)
-
-print(
-    y_test.value_counts().sort_index()
-)
-
-
-print("\n" + "=" * 60)
-print("PREDICTED TARGET DISTRIBUTION")
-print("=" * 60)
-
-print(
-    pd.Series(y_pred).value_counts().sort_index()
-)
-
-
-# ------------------------------------------------------------
-# 5. Probability statistics
-# ------------------------------------------------------------
-
-print("\n" + "=" * 60)
-print("ATTRITION PROBABILITY SUMMARY")
-print("=" * 60)
-
-print(
-    pd.Series(y_pred_proba).describe()
-)
-
-
-# ------------------------------------------------------------
-# 6. Check probability range
-# ------------------------------------------------------------
-
-print("\nMinimum probability:", y_pred_proba.min())
-print("Maximum probability:", y_pred_proba.max())
-
-
-# ------------------------------------------------------------
-# 7. Create prediction result DataFrame
-# ------------------------------------------------------------
-
-prediction_results = pd.DataFrame({
-    "Actual_Attrition": y_test.values,
-    "Predicted_Attrition": y_pred,
-    "Attrition_Probability": y_pred_proba
-})
-
-
-print("\n" + "=" * 60)
-print("SAMPLE PREDICTIONS")
-print("=" * 60)
-
-print(
-    prediction_results.head(10)
-)
-
-
-print("\n" + "=" * 60)
-print("STEP 43 SUCCESS")
-print("=" * 60)
+============================================================
+STEP 43 SUCCESS
+============================================================
