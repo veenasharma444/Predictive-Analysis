@@ -1,1 +1,42 @@
 
+# ==========================================================
+# STEP 3: INSPECT DUPLICATE EMPLOYEE MASTER RECORDS
+# ==========================================================
+
+duplicate_codes = (
+    model_base.loc[
+        model_base["Attrition"] == 1, "_emp_code"
+    ]
+    .value_counts()
+)
+
+duplicate_codes = duplicate_codes[
+    duplicate_codes > 1
+].index.tolist()
+
+duplicate_records = model_base[
+    model_base["_emp_code"].isin(duplicate_codes)
+].copy()
+
+# Show important fields for the duplicate employees
+duplicate_check = duplicate_records[
+    [
+        "_emp_code",
+        "Employee Code",
+        "Employee Name",
+        "Employee Status",
+        "Actual Join Date",
+        "Group Join Date",
+        "Resignation Date",
+        "Designation",
+        "Department",
+        "Branch",
+        "Employee Category"
+    ]
+].sort_values("_emp_code")
+
+print("Duplicate employee records:")
+display(duplicate_check)
+
+print("\nTotal duplicate rows:", len(duplicate_check))
+print("Unique duplicated employees:", duplicate_check["_emp_code"].nunique())
