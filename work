@@ -1,78 +1,60 @@
-# ============================================================
-# STEP 36: TRAIN / TEST SPLIT
-# ============================================================
+============================================================
+STEP 36: TRAIN / TEST SPLIT
+============================================================
 
-from sklearn.model_selection import train_test_split
+Input shapes:
+X: (20468, 95)
+y: (20468,)
 
-print("=" * 60)
-print("STEP 36: TRAIN / TEST SPLIT")
-print("=" * 60)
+Target distribution:
+Attrition
+0    20245
+1      223
+Name: count, dtype: int64
 
-# ------------------------------------------------------------
-# 1. Verify X and y
-# ------------------------------------------------------------
+Target percentage:
+Attrition
+0    98.91
+1     1.09
+Name: proportion, dtype: float64
 
-print("\nInput shapes:")
-print("X:", X.shape)
-print("y:", y.shape)
+============================================================
+SPLIT RESULTS
+============================================================
 
-print("\nTarget distribution:")
-print(y.value_counts())
+X_train shape: (16374, 95)
+X_test shape : (4094, 95)
+y_train shape: (16374,)
+y_test shape : (4094,)
 
-print("\nTarget percentage:")
-print((y.value_counts(normalize=True) * 100).round(2))
+============================================================
+TRAIN TARGET DISTRIBUTION
+============================================================
+Attrition
+0    16196
+1      178
+Name: count, dtype: int64
 
+Percentage:
+Attrition
+0    98.91
+1     1.09
+Name: proportion, dtype: float64
 
-# ------------------------------------------------------------
-# 2. Train / Test split
-# ------------------------------------------------------------
+============================================================
+TEST TARGET DISTRIBUTION
+============================================================
+Attrition
+0    4049
+1      45
+Name: count, dtype: int64
 
-X_train, X_test, y_train, y_test = train_test_split(
-    X,
-    y,
-    test_size=0.20,
-    random_state=42,
-    stratify=y
-)
+Percentage:
+Attrition
+0    98.9
+1     1.1
+Name: proportion, dtype: float64
 
-
-# ------------------------------------------------------------
-# 3. Check resulting shapes
-# ------------------------------------------------------------
-
-print("\n" + "=" * 60)
-print("SPLIT RESULTS")
-print("=" * 60)
-
-print("\nX_train shape:", X_train.shape)
-print("X_test shape :", X_test.shape)
-
-print("y_train shape:", y_train.shape)
-print("y_test shape :", y_test.shape)
-
-
-# ------------------------------------------------------------
-# 4. Check target distribution in both sets
-# ------------------------------------------------------------
-
-print("\n" + "=" * 60)
-print("TRAIN TARGET DISTRIBUTION")
-print("=" * 60)
-
-print(y_train.value_counts())
-print("\nPercentage:")
-print((y_train.value_counts(normalize=True) * 100).round(2))
-
-
-print("\n" + "=" * 60)
-print("TEST TARGET DISTRIBUTION")
-print("=" * 60)
-
-print(y_test.value_counts())
-print("\nPercentage:")
-print((y_test.value_counts(normalize=True) * 100).round(2))
-
-
-print("\n" + "=" * 60)
-print("STEP 36 SUCCESS")
-print("=" * 60)
+============================================================
+STEP 36 SUCCESS
+============================================================
