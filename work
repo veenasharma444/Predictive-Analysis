@@ -1,1 +1,14 @@
 
+# ============================================================
+# CHECK MAX DATE OF EACH DATE COLUMN
+# ============================================================
+
+print("=" * 60)
+print("MAXIMUM DATE BY DATE COLUMN")
+print("=" * 60)
+
+for col in date_columns:
+    valid_dates = X[col].dropna()
+
+    if len(valid_dates) > 0:
+        print(f"{col:<40} -> {valid_dates.max()}")
