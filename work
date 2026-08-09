@@ -1,178 +1,123 @@
+Candidate features available: 109
+============================================================
+FINAL MODEL FEATURE SUMMARY
+============================================================
+Original columns: 140
+Candidate features: 109
+Excluded from candidates: 8
+Final model features: 101
 
-# ==========================================================
-# STEP 20: CREATE CLEAN MODEL FEATURE SET
-# ==========================================================
+FINAL MODEL FEATURES:
+  1. Group
+  2. Company Name
+  3. Title
+  4. Resident Type
+  5. City Name
+  6. State Name
+  7. Branch
+  8. Site Branch
+  9. Division
+ 10. Designation
+ 11. Department
+ 12. Sub Department
+ 13. Cost Center
+ 14. Site Cost Center
+ 15. Site Name
+ 16. Grade
+ 17. Band
+ 18. Reason for Requirement
+ 19. Employee Category
+ 20. Reporting Manager Code
+ 21. Reporting Manager Name
+ 22. Skip Level Manager Code
+ 23. Skip Level Manager
+ 24. Actual Join Date
+ 25. Group Join Date
+ 26. Year Of Service (Current DOJ)
+ 27. Year of Service (Group DOJ)
+ 28. Point of Hire
+ 29. Point of Repatriation
+ 30. ESIC Flag
+ 31. PF Applicable
+ 32. PF Type
+ 33. Probation Status
+ 34. Confirmation Date
+ 35. Source of Hire
+ 36. Agreement type
+ 37. Effective Start Date
+ 38. Employee Air Ticket
+ 39. Air Ticket Class
+ 40. Air Ticket frequency
+ 41. Group Medical Insurance
+ 42. Confidential Profile Flag
+ 43. Confidential Profile
+ 44. Conf. Date (Period Master)
+ 45. Employer Notice Period
+ 46. Bank Name
+ 47. Movement Type
+ 48. Birth Date
+ 49. Last Payable Days
+ 50. Cost Code
+ 51. Profit Code
+ 52. Client Vertical
+ 53. Resident
+ 54. Wage Type
+ 55. TAX Regime
+ 56. Uniform Deduction
+ 57. Process Name
+ 58. Designation_form
+ 59. Cost Center_form
+ 60. Gender_form
+ 61. Marital Status_form
+ 62. Location
+ 63. Region Name
+ 64. Site Name_form
+ 65. Client Verticle
+ 66. Date Of Joined
+ 67. Created Date
+ 68. Monthly Gross Salary
+ 69. Annual_Gross_Salary
+ 70. Tenure_Days
+ 71. Tenure_Years
+ 72. OT1_Chargeable_OT
+ 73. OT1_NonChargeable_OT
+ 74. OT1_Total_OT
+ 75. OT1_OT_Days
+ 76. OT1_Avg_Daily_OT
+ 77. OT1_Max_Daily_OT
+ 78. OT2_Chargeable_OT
+ 79. OT2_NonChargeable_OT
+ 80. OT2_Total_OT
+ 81. OT3_Chargeable_OT
+ 82. OT3_NonChargeable_OT
+ 83. OT3_Total_OT
+ 84. OT4_Chargeable_OT
+ 85. OT4_NonChargeable_OT
+ 86. OT4_Total_OT
+ 87. OT4_OT_Days
+ 88. OT4_Avg_Daily_OT
+ 89. OT4_Max_Daily_OT
+ 90. Leave_Opening_Balance
+ 91. Leave_Accrued
+ 92. Leave_Consumed
+ 93. Leave_Adjustment
+ 94. Leave_Lapse
+ 95. Leave_Balance
+ 96. Leave_Future_Approved
+ 97. Leave_Balance_After_Future
+ 98. Leave_Encashment
+ 99. Leave_Carry_Forward
+100. Leave_Record_Count
+101. Leave_Type_Count
 
-# IMPORTANT:
-# Start ONLY from the 109 candidate features.
-# Do NOT start again from all 140 model_base columns.
-
-candidate_features = [
-    c for c in candidate_features
-    if c in model_base.columns
-]
-
-print("Candidate features available:", len(candidate_features))
-
-
-# ==========================================================
-# 1. TARGET COLUMN
-# ==========================================================
-
-target_col = "Attrition"
-
-
-# ==========================================================
-# 2. REMOVE IDENTIFIERS / PERSONAL INFORMATION
-# ==========================================================
-
-identifier_cols = {
-    "Employee Code",
-    "Employee_Code_Clean",
-    "_emp_code",
-
-    "First Name",
-    "Middle Name",
-    "Last Name",
-    "Employee Name",
-    "Preferred Name",
-
-    "Official Email Address",
-    "Personal Email Address",
-    "Personal Mobile Number",
-    "Emergency Contact Number",
-
-    "PAN Number",
-    "Aadhar Card No",
-    "Account Number",
-    "IFSC Code",
-    "PF Number",
-    "UAN Number",
-    "ESIC Number",
-
-    "Father Name",
-
-    "Permanent Address",
-    "Current Address",
-    "Correspondence Address",
-}
-
-
-# ==========================================================
-# 3. REMOVE TARGET / DATA LEAKAGE COLUMNS
-# ==========================================================
-
-leakage_cols = {
-    "Attrition",
-
-    "Resignation Date",
-    "Last Working Date",
-    "FNF Settlement Date",
-
-    "Employee Status",
-    "Employee Status_form",
-
-    "Leave Status",
-    "Effective End Date",
-}
-
-
-# ==========================================================
-# 4. REMOVE SENSITIVE / PROTECTED ATTRIBUTES
-# ==========================================================
-
-sensitive_cols = {
-    "Gender",
-    "Nationality",
-    "Marital Status",
-    "Physical Disability",
-    "Dual Nationality",
-    "Religion",
-    "2nd Nationality",
-    "Blood Group",
-}
-
-
-# ==========================================================
-# 5. COMBINE EXCLUSIONS
-# ==========================================================
-
-model_exclusions = (
-    identifier_cols
-    | leakage_cols
-    | sensitive_cols
-)
-
-
-# ==========================================================
-# 6. CREATE FINAL MODEL FEATURES
-# ==========================================================
-
-final_model_features = [
-    c for c in candidate_features
-    if c not in model_exclusions
-]
-
-
-# ==========================================================
-# 7. SAFETY CHECKS
-# ==========================================================
-
-# Target must NEVER be present
-assert target_col not in final_model_features
-
-# Leakage columns must NEVER be present
-leakage_found = [
-    c for c in final_model_features
-    if c in leakage_cols
-]
-
-assert len(leakage_found) == 0, (
-    f"Leakage columns found: {leakage_found}"
-)
-
-# Identifier columns must NEVER be present
-identifier_found = [
-    c for c in final_model_features
-    if c in identifier_cols
-]
-
-assert len(identifier_found) == 0, (
-    f"Identifier columns found: {identifier_found}"
-)
-
-
-# ==========================================================
-# 8. FINAL SUMMARY
-# ==========================================================
-
-print("=" * 60)
-print("FINAL MODEL FEATURE SUMMARY")
-print("=" * 60)
-
-print("Original columns:", len(model_base.columns))
-print("Candidate features:", len(candidate_features))
-print("Excluded from candidates:", len(candidate_features) - len(final_model_features))
-print("Final model features:", len(final_model_features))
-
-print("\nFINAL MODEL FEATURES:")
-
-for i, col in enumerate(final_model_features, 1):
-    print(f"{i:3}. {col}")
-
-
-# ==========================================================
-# 9. SHOW EXCLUDED CANDIDATES
-# ==========================================================
-
-excluded_from_candidates = [
-    c for c in candidate_features
-    if c in model_exclusions
-]
-
-print("\n" + "=" * 60)
-print("EXCLUDED CANDIDATE FEATURES")
-print("=" * 60)
-
-for i, col in enumerate(excluded_from_candidates, 1):
-    print(f"{i:3}. {col}")
+============================================================
+EXCLUDED CANDIDATE FEATURES
+============================================================
+  1. Gender
+  2. Nationality
+  3. Marital Status
+  4. Physical Disability
+  5. Dual Nationality
+  6. Religion
+  7. Blood Group
+  8. 2nd Nationality
