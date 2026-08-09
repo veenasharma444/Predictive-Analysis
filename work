@@ -1,1 +1,216 @@
 
+# ==========================================================
+# STEP 26: TRAIN / TEST SPLIT + PREPROCESSING
+# ==========================================================
+
+from sklearn.model_selection import train_test_split
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.impute import SimpleImputer
+from sklearn.pipeline import Pipeline
+
+print("=" * 70)
+print("STEP 26: TRAIN / TEST SPLIT + PREPROCESSING")
+print("=" * 70)
+
+
+# ==========================================================
+# 1. TRAIN / TEST SPLIT
+# ==========================================================
+
+X_train, X_test, y_train, y_test = train_test_split(
+    X,
+    y,
+    test_size=0.20,
+    random_state=42,
+    stratify=y
+)
+
+
+# ==========================================================
+# 2. VERIFY CLASS DISTRIBUTION
+# ==========================================================
+
+print("\nTRAINING SET")
+print("Shape:", X_train.shape)
+
+print("\nTraining target distribution:")
+print(y_train.value_counts())
+
+print("\nTraining target percentage:")
+print(
+    y_train.value_counts(normalize=True)
+    .mul(100)
+    .round(2)
+)
+
+
+print("\n" + "-" * 70)
+
+print("\nTEST SET")
+print("Shape:", X_test.shape)
+
+print("\nTest target distribution:")
+print(y_test.value_counts())
+
+print("\nTest target percentage:")
+print(
+    y_test.value_counts(normalize=True)
+    .mul(100)
+    .round(2)
+)
+
+
+# ==========================================================
+# 3. PREPROCESSING
+# ==========================================================
+
+# Numeric pipeline
+numeric_pipeline = Pipeline(
+    steps=[
+        (
+            "imputer",
+            SimpleImputer(strategy="median")
+        )
+    ]
+)
+
+
+# Categorical pipeline
+categorical_pipeline = Pipeline(
+    steps=[
+        (
+            "imputer",
+            SimpleImputer(
+                strategy="constant",
+                fill_value="Missing"
+            )
+        ),
+        (
+            "encoder",
+            OneHotEncoder(
+                handle_unknown="ignore",
+                min_frequency=2
+            )
+        )
+    ]
+)
+
+
+# ==========================================================
+# 4. COMBINE PREPROCESSORS
+# ==========================================================
+
+preprocessor = ColumnTransformer(
+    transformers=[
+        (
+            "numeric",
+            numeric_pipeline,
+            numeric_features
+        ),
+        (
+            "categorical",
+            categorical_pipeline,
+            categorical_features
+        )
+    ],
+    remainder="drop"
+)
+
+
+# ==========================================================
+# 5. FIT ONLY ON TRAINING DATA
+# ==========================================================
+
+X_train_processed = preprocessor.fit_transform(
+    X_train
+)
+
+X_test_processed = preprocessor.transform(
+    X_test
+)
+
+
+# ==========================================================
+# 6. OUTPUT SHAPE
+# ==========================================================
+
+print("\n" + "=" * 70)
+print("PREPROCESSING RESULT")
+print("=" * 70)
+
+print(
+    "Original feature count:",
+    X_train.shape[1]
+)
+
+print(
+    "Processed training shape:",
+    X_train_processed.shape
+)
+
+print(
+    "Processed test shape:",
+    X_test_processed.shape
+)
+
+
+# ==========================================================
+# 7. SPARSITY CHECK
+# ==========================================================
+
+print("\nProcessed matrix type:")
+print(type(X_train_processed))
+
+if hasattr(X_train_processed, "nnz"):
+
+    print(
+        "Training non-zero values:",
+        X_train_processed.nnz
+    )
+
+    print(
+        "Training matrix density:",
+        round(
+            X_train_processed.nnz /
+            (
+                X_train_processed.shape[0]
+                * X_train_processed.shape[1]
+            ) * 100,
+            4
+        ),
+        "%"
+    )
+
+
+# ==========================================================
+# 8. FINAL CHECK
+# ==========================================================
+
+print("\n" + "=" * 70)
+print("FINAL CHECK")
+print("=" * 70)
+
+print(
+    "Train rows:",
+    len(X_train)
+)
+
+print(
+    "Test rows:",
+    len(X_test)
+)
+
+print(
+    "Train attrition cases:",
+    int(y_train.sum())
+)
+
+print(
+    "Test attrition cases:",
+    int(y_test.sum())
+)
+
+print(
+    "Preprocessor fitted successfully: YES"
+)
