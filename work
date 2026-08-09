@@ -1,1 +1,82 @@
+# ==========================================================
+# STEP 9: CREATE FORM / SALARY FEATURES
+# ==========================================================
 
+form_features = form[
+    [
+        "_emp_code",
+        "Employee Status",
+        "Designation",
+        "Cost Center",
+        "Gender",
+        "Marital Status",
+        "Location",
+        "Region Name",
+        "Site Name",
+        "Client Verticle",
+        "Date Of Joined",
+        "Created Date",
+        "Monthly Gross Salary"
+    ]
+].copy()
+
+
+# ----------------------------------------------------------
+# Convert date columns
+# ----------------------------------------------------------
+
+form_features["Date Of Joined"] = pd.to_datetime(
+    form_features["Date Of Joined"],
+    errors="coerce"
+)
+
+form_features["Created Date"] = pd.to_datetime(
+    form_features["Created Date"],
+    errors="coerce"
+)
+
+
+# ----------------------------------------------------------
+# Convert salary to numeric
+# ----------------------------------------------------------
+
+form_features["Monthly Gross Salary"] = pd.to_numeric(
+    form_features["Monthly Gross Salary"],
+    errors="coerce"
+)
+
+
+# ----------------------------------------------------------
+# Create salary-related feature
+# ----------------------------------------------------------
+
+form_features["Annual_Gross_Salary"] = (
+    form_features["Monthly Gross Salary"] * 12
+)
+
+
+# ----------------------------------------------------------
+# Create tenure feature
+# ----------------------------------------------------------
+
+reference_date = pd.Timestamp.today().normalize()
+
+form_features["Tenure_Days"] = (
+    reference_date - form_features["Date Of Joined"]
+).dt.days
+
+form_features["Tenure_Years"] = (
+    form_features["Tenure_Days"] / 365.25
+)
+
+
+print("Form features shape:", form_features.shape)
+
+print("\nUnique employees:")
+print(form_features["_emp_code"].nunique())
+
+print("\nForm feature columns:")
+print(form_features.columns.tolist())
+
+print("\nSample:")
+print(form_features.head())
