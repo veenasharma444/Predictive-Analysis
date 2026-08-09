@@ -1,89 +1,52 @@
-# ============================================================
-# STEP 46: RANDOM FOREST FEATURE IMPORTANCE
-# ============================================================
+============================================================
+STEP 46: RANDOM FOREST FEATURE IMPORTANCE
+============================================================
 
-print("=" * 60)
-print("STEP 46: RANDOM FOREST FEATURE IMPORTANCE")
-print("=" * 60)
+Number of processed feature names: 4354
+Number of model features: 4354
 
-# ------------------------------------------------------------
-# 1. Get feature names from preprocessing pipeline
-# ------------------------------------------------------------
+============================================================
+TOP 30 MOST IMPORTANT FEATURES
+============================================================
+                                      Feature  Importance
+               num__Effective Start Date_Days    0.077947
+                           num__Leave_Balance    0.040158
+                     num__Leave_Carry_Forward    0.038203
+              num__Leave_Balance_After_Future    0.037906
+                           num__Leave_Accrued    0.034089
+                 num__Calculated_Tenure_Years    0.020726
+                   num__Actual Join Date_Days    0.020220
+                    num__Group Join Date_Days    0.019631
+                         num__Birth Date_Days    0.013060
+                               num__Age_Years    0.013049
+                     num__Date Of Joined_Days    0.012643
+                       num__Created Date_Days    0.011537
+                             num__Tenure_Days    0.011478
+                            num__Tenure_Years    0.010859
+             num__Year of Service (Group DOJ)    0.009924
+                             num__Profit Code    0.008993
+            cat__Client Vertical_North Region    0.008927
+           num__Year Of Service (Current DOJ)    0.008924
+         cat__Skip Level Manager Code_'283962    0.008138
+                       cat__Site Branch_NOIDA    0.007728
+                     num__Annual_Gross_Salary    0.007597
+                 cat__Client Verticle_Unknown    0.007339
+                         cat__City Name_Noida    0.007219
+                        cat__Location_Unknown    0.006715
+                   num__Salary_Data_Available    0.006650
+                cat__State Name_Uttar Pradesh    0.006581
+cat__Skip Level Manager_Bhagwan Singh Dhanwal    0.006531
+                     cat__Region Name_Unknown    0.006255
+                            cat__Branch_NOIDA    0.006204
+                    num__Monthly Gross Salary    0.006071
 
-feature_names = preprocessor.get_feature_names_out()
+============================================================
+FEATURE IMPORTANCE VALIDATION
+============================================================
+Total importance: 1.000000
 
-print(f"\nNumber of processed feature names: {len(feature_names)}")
-print(f"Number of model features: {len(rf_model.feature_importances_)}")
+Feature importance saved as: random_forest_feature_importance.csv
 
-
-# ------------------------------------------------------------
-# 2. Create feature importance dataframe
-# ------------------------------------------------------------
-
-feature_importance_df = pd.DataFrame({
-    "Feature": feature_names,
-    "Importance": rf_model.feature_importances_
-})
-
-
-# ------------------------------------------------------------
-# 3. Sort by importance
-# ------------------------------------------------------------
-
-feature_importance_df = (
-    feature_importance_df
-    .sort_values(
-        by="Importance",
-        ascending=False
-    )
-    .reset_index(drop=True)
-)
-
-
-# ------------------------------------------------------------
-# 4. Display top 30 features
-# ------------------------------------------------------------
-
-print("\n" + "=" * 60)
-print("TOP 30 MOST IMPORTANT FEATURES")
-print("=" * 60)
-
-print(
-    feature_importance_df.head(30).to_string(
-        index=False
-    )
-)
-
-
-# ------------------------------------------------------------
-# 5. Total importance check
-# ------------------------------------------------------------
-
-print("\n" + "=" * 60)
-print("FEATURE IMPORTANCE VALIDATION")
-print("=" * 60)
-
-print(
-    f"Total importance: "
-    f"{feature_importance_df['Importance'].sum():.6f}"
-)
-
-
-# ------------------------------------------------------------
-# 6. Save complete feature importance
-# ------------------------------------------------------------
-
-feature_importance_df.to_csv(
-    "random_forest_feature_importance.csv",
-    index=False
-)
-
-print(
-    "\nFeature importance saved as:"
-    " random_forest_feature_importance.csv"
-)
-
-
-print("\n" + "=" * 60)
-print("STEP 46 SUCCESS")
-print("=" * 60)
+============================================================
+STEP 46 SUCCESS
+============================================================
