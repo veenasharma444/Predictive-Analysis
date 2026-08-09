@@ -1,14 +1,61 @@
+============================================================
+STEP 35: FEATURE ENGINEERING + DATE TRANSFORMATION
+============================================================
 
-# ============================================================
-# CHECK MAX DATE OF EACH DATE COLUMN
-# ============================================================
+Date columns:
+- Actual Join Date
+- Group Join Date
+- Confirmation Date
+- Effective Start Date
+- Conf. Date (Period Master)
+- Birth Date
+- Date Of Joined
+- Created Date
 
-print("=" * 60)
-print("MAXIMUM DATE BY DATE COLUMN")
-print("=" * 60)
+Date conversion completed successfully.
+============================================================
+MAXIMUM DATE BY DATE COLUMN
+============================================================
+Actual Join Date                         -> 2026-08-31 00:00:00
+Group Join Date                          -> 2026-08-31 00:00:00
+Confirmation Date                        -> 2027-01-23 00:00:00
+Effective Start Date                     -> 2026-08-31 00:00:00
+Conf. Date (Period Master)               -> 2027-01-23 00:00:00
+Birth Date                               -> 2009-03-22 00:00:00
+Date Of Joined                           -> 2026-08-31 00:00:00
+Created Date                             -> 2026-08-07 00:00:00
 
-for col in date_columns:
-    valid_dates = X[col].dropna()
+Reference date: 2027-01-23 00:00:00
 
-    if len(valid_dates) > 0:
-        print(f"{col:<40} -> {valid_dates.max()}")
+============================================================
+MODEL INPUT SUMMARY
+============================================================
+
+X shape: (20468, 95)
+y shape: (20468,)
+
+Target distribution:
+Attrition
+0    20245
+1      223
+Name: count, dtype: int64
+
+Target percentage:
+Attrition
+0    98.91
+1     1.09
+Name: proportion, dtype: float64
+
+Remaining datetime columns:
+[]
+
+Target present in X:
+False
+
+Movement Type present in X:
+False
+
+Forbidden columns present:
+[]
+
+STEP 35 SUCCESS
