@@ -1,1 +1,142 @@
 
+# ==========================================================
+# STEP 23: PREPARE FEATURES FOR MODELING
+# ==========================================================
+
+import pandas as pd
+import numpy as np
+
+# Start with the 79 clean features
+model_features = clean_features.copy()
+
+print("=" * 70)
+print("STEP 23: MODEL FEATURE PREPARATION")
+print("=" * 70)
+
+
+# ==========================================================
+# 1. IDENTIFY DATE COLUMNS
+# ==========================================================
+
+date_cols = [
+    c for c in model_features
+    if (
+        "date" in c.lower()
+        or "doj" in c.lower()
+        or "birth" in c.lower()
+    )
+]
+
+print("\nDATE COLUMNS:")
+for c in date_cols:
+    print(" -", c)
+
+
+# ==========================================================
+# 2. IDENTIFY CATEGORICAL COLUMNS CORRECTLY
+# ==========================================================
+
+categorical_cols = []
+
+for c in model_features:
+
+    dtype = model_base[c].dtype
+
+    if (
+        pd.api.types.is_object_dtype(dtype)
+        or pd.api.types.is_string_dtype(dtype)
+        or pd.api.types.is_categorical_dtype(dtype)
+    ):
+        categorical_cols.append(c)
+
+
+# Remove date columns from categorical list
+categorical_cols = [
+    c for c in categorical_cols
+    if c not in date_cols
+]
+
+
+# ==========================================================
+# 3. IDENTIFY NUMERIC COLUMNS
+# ==========================================================
+
+numeric_cols = [
+    c for c in model_features
+    if c not in categorical_cols
+    and c not in date_cols
+]
+
+
+# ==========================================================
+# 4. PRINT CORRECT COUNTS
+# ==========================================================
+
+print("\n" + "=" * 70)
+print("FEATURE TYPE SUMMARY")
+print("=" * 70)
+
+print("Total model features:", len(model_features))
+print("Date features:", len(date_cols))
+print("Categorical features:", len(categorical_cols))
+print("Numeric features:", len(numeric_cols))
+
+print("\nCATEGORICAL FEATURES:")
+for i, c in enumerate(categorical_cols, 1):
+    print(f"{i:3}. {c}")
+
+print("\nNUMERIC FEATURES:")
+for i, c in enumerate(numeric_cols, 1):
+    print(f"{i:3}. {c}")
+
+
+# ==========================================================
+# 5. CHECK HIGH-CARDINALITY CATEGORICAL FEATURES
+# ==========================================================
+
+print("\n" + "=" * 70)
+print("HIGH-CARDINALITY CATEGORICAL FEATURES")
+print("=" * 70)
+
+for c in categorical_cols:
+
+    unique_count = model_base[c].nunique(dropna=True)
+
+    if unique_count >= 100:
+        print(
+            f"{c}: "
+            f"{unique_count} unique values"
+        )
+
+
+# ==========================================================
+# 6. CHECK DATE TYPES
+# ==========================================================
+
+print("\n" + "=" * 70)
+print("DATE COLUMN TYPES")
+print("=" * 70)
+
+for c in date_cols:
+    print(
+        f"{c}: "
+        f"{model_base[c].dtype}"
+    )
+
+
+# ==========================================================
+# 7. CHECK MISSINGNESS FOR CATEGORICAL FEATURES
+# ==========================================================
+
+print("\n" + "=" * 70)
+print("CATEGORICAL MISSINGNESS")
+print("=" * 70)
+
+for c in categorical_cols:
+
+    missing_pct = model_base[c].isna().mean() * 100
+
+    print(
+        f"{c}: "
+        f"{missing_pct:.2f}% missing"
+    )
