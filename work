@@ -1,85 +1,187 @@
+============================================================
+STEP 38: FEATURE TYPE & MISSING VALUE INSPECTION
+============================================================
 
-# ============================================================
-# STEP 38: INSPECT NON-NUMERIC AND MISSING FEATURES
-# ============================================================
+============================================================
+NON-NUMERIC COLUMNS
+============================================================
+Count: 35
+01. Title
+02. City Name
+03. State Name
+04. Branch
+05. Site Branch
+06. Designation
+07. Department
+08. Cost Center
+09. Site Cost Center
+10. Site Name
+11. Grade
+12. Band
+13. Reason for Requirement
+14. Employee Category
+15. Reporting Manager Code
+16. Reporting Manager Name
+17. Skip Level Manager Code
+18. Skip Level Manager
+19. Point of Hire
+20. Point of Repatriation
+21. ESIC Flag
+22. PF Applicable
+23. PF Type
+24. Probation Status
+25. Source of Hire
+26. Bank Name
+27. Cost Code
+28. Client Vertical
+29. Resident
+30. Wage Type
+31. TAX Regime
+32. Uniform Deduction
+33. Location
+34. Region Name
+35. Client Verticle
 
-print("=" * 60)
-print("STEP 38: FEATURE TYPE & MISSING VALUE INSPECTION")
-print("=" * 60)
+============================================================
+MISSING VALUES BY COLUMN
+============================================================
+Point of Hire                      14651
+Point of Repatriation              14649
+OT2_Chargeable_OT                  13789
+OT1_Avg_Daily_OT                   13789
+OT1_Max_Daily_OT                   13789
+OT1_OT_Days                        13789
+OT1_Total_OT                       13789
+OT1_NonChargeable_OT               13789
+OT2_Total_OT                       13789
+OT2_NonChargeable_OT               13789
+OT1_Chargeable_OT                  13789
+OT4_Max_Daily_OT                   12590
+OT4_OT_Days                        12590
+OT4_Chargeable_OT                  12590
+OT4_NonChargeable_OT               12590
+OT4_Total_OT                       12590
+OT4_Avg_Daily_OT                   12590
+OT3_Chargeable_OT                  12586
+OT3_Total_OT                       12586
+OT3_NonChargeable_OT               12586
+Tenure_Years                       11050
+Created Date_Days                  11050
+Tenure_Days                        11050
+Client Verticle                    11050
+Date Of Joined_Days                11050
+Annual_Gross_Salary                11050
+Region Name                        11050
+Monthly Gross Salary               11050
+Location                           11050
+Reason for Requirement              5693
+Source of Hire                      5693
+Conf. Date (Period Master)_Days     3067
+Confirmation Date_Days              3067
+Leave_Future_Approved               1690
+Leave_Balance                       1690
+Leave_Consumed                      1690
+Leave_Accrued                       1690
+Leave_Type_Count                    1690
+Leave_Record_Count                  1690
+Leave_Carry_Forward                 1690
+Leave_Opening_Balance               1690
+Leave_Balance_After_Future          1690
+PF Applicable                        932
+Bank Name                            123
+ESIC Flag                             92
+TAX Regime                            28
+Wage Type                              9
+Employer Notice Period                 7
+Probation Status                       1
 
+============================================================
+MISSING PERCENTAGE BY COLUMN
+============================================================
+Point of Hire                      89.48
+Point of Repatriation              89.47
+OT2_NonChargeable_OT               84.21
+OT1_OT_Days                        84.21
+OT1_Total_OT                       84.21
+OT1_NonChargeable_OT               84.21
+OT2_Total_OT                       84.21
+OT1_Avg_Daily_OT                   84.21
+OT1_Max_Daily_OT                   84.21
+OT2_Chargeable_OT                  84.21
+OT1_Chargeable_OT                  84.21
+OT4_NonChargeable_OT               76.89
+OT4_Total_OT                       76.89
+OT4_Chargeable_OT                  76.89
+OT4_Max_Daily_OT                   76.89
+OT4_OT_Days                        76.89
+OT4_Avg_Daily_OT                   76.89
+OT3_Chargeable_OT                  76.87
+OT3_Total_OT                       76.87
+OT3_NonChargeable_OT               76.87
+Date Of Joined_Days                67.49
+Region Name                        67.49
+Tenure_Years                       67.49
+Annual_Gross_Salary                67.49
+Tenure_Days                        67.49
+Location                           67.49
+Monthly Gross Salary               67.49
+Created Date_Days                  67.49
+Client Verticle                    67.49
+Source of Hire                     34.77
+Reason for Requirement             34.77
+Confirmation Date_Days             18.73
+Conf. Date (Period Master)_Days    18.73
+Leave_Type_Count                   10.32
+Leave_Record_Count                 10.32
+Leave_Carry_Forward                10.32
+Leave_Balance                      10.32
+Leave_Accrued                      10.32
+Leave_Consumed                     10.32
+Leave_Future_Approved              10.32
+Leave_Opening_Balance              10.32
+Leave_Balance_After_Future         10.32
+PF Applicable                       5.69
+Bank Name                           0.75
+ESIC Flag                           0.56
+TAX Regime                          0.17
+Wage Type                           0.05
+Employer Notice Period              0.04
+Probation Status                    0.01
 
-# ------------------------------------------------------------
-# 1. Non-numeric columns
-# ------------------------------------------------------------
+============================================================
+COLUMNS WITH >= 50% MISSING VALUES
+============================================================
+Count: 29
+Point of Hire            89.48
+Point of Repatriation    89.47
+OT2_NonChargeable_OT     84.21
+OT1_OT_Days              84.21
+OT1_Total_OT             84.21
+OT1_NonChargeable_OT     84.21
+OT2_Total_OT             84.21
+OT1_Avg_Daily_OT         84.21
+OT1_Max_Daily_OT         84.21
+OT2_Chargeable_OT        84.21
+OT1_Chargeable_OT        84.21
+OT4_NonChargeable_OT     76.89
+OT4_Total_OT             76.89
+OT4_Chargeable_OT        76.89
+OT4_Max_Daily_OT         76.89
+OT4_OT_Days              76.89
+OT4_Avg_Daily_OT         76.89
+OT3_Chargeable_OT        76.87
+OT3_Total_OT             76.87
+OT3_NonChargeable_OT     76.87
+Date Of Joined_Days      67.49
+Region Name              67.49
+Tenure_Years             67.49
+Annual_Gross_Salary      67.49
+Tenure_Days              67.49
+Location                 67.49
+Monthly Gross Salary     67.49
+Created Date_Days        67.49
+Client Verticle          67.49
 
-non_numeric_cols = X_train.select_dtypes(
-    exclude=["number"]
-).columns.tolist()
-
-print("\n" + "=" * 60)
-print("NON-NUMERIC COLUMNS")
-print("=" * 60)
-
-print("Count:", len(non_numeric_cols))
-
-for i, col in enumerate(non_numeric_cols, 1):
-    print(f"{i:02d}. {col}")
-
-
-# ------------------------------------------------------------
-# 2. Missing values by column
-# ------------------------------------------------------------
-
-missing_summary = X_train.isna().sum()
-
-missing_summary = missing_summary[
-    missing_summary > 0
-].sort_values(ascending=False)
-
-
-print("\n" + "=" * 60)
-print("MISSING VALUES BY COLUMN")
-print("=" * 60)
-
-print(missing_summary.to_string())
-
-
-# ------------------------------------------------------------
-# 3. Missing percentage
-# ------------------------------------------------------------
-
-missing_percentage = (
-    X_train.isna().mean() * 100
-).sort_values(ascending=False)
-
-missing_percentage = missing_percentage[
-    missing_percentage > 0
-]
-
-
-print("\n" + "=" * 60)
-print("MISSING PERCENTAGE BY COLUMN")
-print("=" * 60)
-
-print(missing_percentage.round(2).to_string())
-
-
-# ------------------------------------------------------------
-# 4. High-missing columns
-# ------------------------------------------------------------
-
-high_missing = missing_percentage[
-    missing_percentage >= 50
-]
-
-print("\n" + "=" * 60)
-print("COLUMNS WITH >= 50% MISSING VALUES")
-print("=" * 60)
-
-print("Count:", len(high_missing))
-print(high_missing.round(2).to_string())
-
-
-print("\n" + "=" * 60)
-print("STEP 38 COMPLETE")
-print("=" * 60)
+============================================================
+STEP 38 COMPLETE
+============================================================
