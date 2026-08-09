@@ -1,1 +1,282 @@
+# ============================================================
+# STEP 35: FEATURE ENGINEERING + DATE TRANSFORMATION
+# FIXED FOR datetime64[us]
+# ============================================================
 
+print("=" * 60)
+print("STEP 35: FEATURE ENGINEERING + DATE TRANSFORMATION")
+print("=" * 60)
+
+# ------------------------------------------------------------
+# 1. Start from clean dataset
+# ------------------------------------------------------------
+
+modeling_data = model_data_clean.copy()
+
+# ------------------------------------------------------------
+# 2. Separate target
+# ------------------------------------------------------------
+
+y = modeling_data["Attrition"].copy()
+
+X = modeling_data.drop(
+    columns=["Attrition"],
+    errors="ignore"
+).copy()
+
+# ------------------------------------------------------------
+# 3. Date columns
+# ------------------------------------------------------------
+
+date_columns = [
+    "Actual Join Date",
+    "Group Join Date",
+    "Confirmation Date",
+    "Effective Start Date",
+    "Conf. Date (Period Master)",
+    "Birth Date",
+    "Date Of Joined",
+    "Created Date"
+]
+
+date_columns = [
+    col for col in date_columns
+    if col in X.columns
+]
+
+print("\nDate columns:")
+for col in date_columns:
+    print("-", col)
+
+# ------------------------------------------------------------
+# 4. FIX datetime64[us] -> datetime64[ns]
+# ------------------------------------------------------------
+
+for col in date_columns:
+
+    # Convert safely
+    X[col] = pd.to_datetime(
+        X[col],
+        errors="coerce"
+    )
+
+    # Explicitly convert datetime unit to nanoseconds
+    X[col] = X[col].dt.as_unit("ns")
+
+print("\nDate conversion completed successfully.")
+
+# ------------------------------------------------------------
+# 5. Determine reference date
+# ------------------------------------------------------------
+
+all_dates = []
+
+for col in date_columns:
+
+    valid_dates = X[col].dropna()
+
+    if len(valid_dates) > 0:
+        all_dates.append(valid_dates.max())
+
+if all_dates:
+    reference_date = max(all_dates)
+else:
+    reference_date = pd.Timestamp("2026-01-01")
+
+print("\nReference date:", reference_date)
+
+# ------------------------------------------------------------
+# 6. Age
+# ------------------------------------------------------------
+
+if "Birth Date" in X.columns:
+
+    X["Age_Years"] = (
+        (reference_date - X["Birth Date"])
+        .dt.days / 365.25
+    )
+
+    X.loc[
+        (X["Age_Years"] < 15) |
+        (X["Age_Years"] > 100),
+        "Age_Years"
+    ] = np.nan
+
+# ------------------------------------------------------------
+# 7. Calculated tenure
+# ------------------------------------------------------------
+
+if "Actual Join Date" in X.columns:
+
+    X["Calculated_Tenure_Years"] = (
+        (reference_date - X["Actual Join Date"])
+        .dt.days / 365.25
+    )
+
+    X.loc[
+        X["Calculated_Tenure_Years"] < 0,
+        "Calculated_Tenure_Years"
+    ] = np.nan
+
+# ------------------------------------------------------------
+# 8. Confirmation flag
+# ------------------------------------------------------------
+
+if "Confirmation Date" in X.columns:
+
+    X["Is_Confirmed"] = (
+        X["Confirmation Date"].notna()
+        .astype(int)
+    )
+
+# ------------------------------------------------------------
+# 9. OT availability
+# ------------------------------------------------------------
+
+ot_columns = {
+    "OT1": "OT1_Total_OT",
+    "OT2": "OT2_Total_OT",
+    "OT3": "OT3_Total_OT",
+    "OT4": "OT4_Total_OT"
+}
+
+for prefix, col in ot_columns.items():
+
+    if col in X.columns:
+
+        X[f"{prefix}_Data_Available"] = (
+            X[col].notna()
+            .astype(int)
+        )
+
+# ------------------------------------------------------------
+# 10. Salary availability
+# ------------------------------------------------------------
+
+if "Monthly Gross Salary" in X.columns:
+
+    X["Salary_Data_Available"] = (
+        X["Monthly Gross Salary"]
+        .notna()
+        .astype(int)
+    )
+
+# ------------------------------------------------------------
+# 11. Leave availability
+# ------------------------------------------------------------
+
+if "Leave_Balance" in X.columns:
+
+    X["Leave_Data_Available"] = (
+        X["Leave_Balance"]
+        .notna()
+        .astype(int)
+    )
+
+# ------------------------------------------------------------
+# 12. Convert dates into numeric day values
+# ------------------------------------------------------------
+
+epoch = pd.Timestamp("1970-01-01")
+
+for col in date_columns:
+
+    X[f"{col}_Days"] = (
+        X[col] - epoch
+    ).dt.days
+
+    X[f"{col}_Missing"] = (
+        X[col].isna()
+        .astype(int)
+    )
+
+    # Remove original datetime column
+    X.drop(
+        columns=[col],
+        inplace=True
+    )
+
+# ------------------------------------------------------------
+# 13. Safety checks
+# ------------------------------------------------------------
+
+print("\n" + "=" * 60)
+print("MODEL INPUT SUMMARY")
+print("=" * 60)
+
+print("\nX shape:", X.shape)
+print("y shape:", y.shape)
+
+print("\nTarget distribution:")
+print(y.value_counts())
+
+print("\nTarget percentage:")
+print(
+    y.value_counts(normalize=True)
+    .mul(100)
+    .round(2)
+)
+
+print("\nRemaining datetime columns:")
+print(
+    X.select_dtypes(
+        include=["datetime64"]
+    ).columns.tolist()
+)
+
+print("\nTarget present in X:")
+print("Attrition" in X.columns)
+
+print("\nMovement Type present in X:")
+print("Movement Type" in X.columns)
+
+# ------------------------------------------------------------
+# 14. Forbidden columns check
+# ------------------------------------------------------------
+
+forbidden_columns = [
+    "Attrition",
+    "Movement Type",
+    "Resignation Date",
+    "Last Working Date",
+    "FNF Settlement Date",
+    "Employee Status",
+    "Leave Status",
+    "Effective End Date",
+    "Employee Code",
+    "Employee_Code_Clean",
+    "_emp_code",
+    "First Name",
+    "Middle Name",
+    "Last Name",
+    "Employee Name",
+    "Official Email Address",
+    "Personal Email Address",
+    "Personal Mobile Number",
+    "Emergency Contact Number",
+    "PAN Number",
+    "Aadhar Card No",
+    "Account Number",
+    "IFSC Code",
+    "PF Number",
+    "UAN Number",
+    "ESIC Number",
+    "Father Name",
+    "Permanent Address",
+    "Current Address",
+    "Correspondence Address"
+]
+
+forbidden_present = [
+    col for col in forbidden_columns
+    if col in X.columns
+]
+
+print("\nForbidden columns present:")
+print(forbidden_present)
+
+assert len(forbidden_present) == 0
+assert "Movement Type" not in X.columns
+assert "Attrition" not in X.columns
+
+print("\nSTEP 35 SUCCESS")
