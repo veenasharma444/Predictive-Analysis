@@ -1,47 +1,113 @@
+Feature audit shape: (109, 6)
 
-# ==========================================================
-# STEP 19: AUDIT CANDIDATE FEATURES
-# ==========================================================
-
-audit_rows = []
-
-for col in candidate_features:
-
-    s = model_base[col]
-
-    audit_rows.append({
-        "Column": col,
-        "Dtype": str(s.dtype),
-        "Missing": int(s.isna().sum()),
-        "Missing_%": round(s.isna().mean() * 100, 2),
-        "Unique": int(s.nunique(dropna=True)),
-        "Unique_%": round(
-            s.nunique(dropna=True) / len(model_base) * 100, 2
-        )
-    })
-
-feature_audit = pd.DataFrame(audit_rows)
-
-print("Feature audit shape:", feature_audit.shape)
-
-print("\n===== CANDIDATE FEATURE AUDIT =====")
-print(feature_audit.to_string(index=False))
-
-
-
-
-///////
-# ==========================================================
-# HIGH-CARDINALITY FEATURES
-# ==========================================================
-
-print("===== HIGH CARDINALITY FEATURES =====")
-
-high_cardinality = feature_audit[
-    (feature_audit["Unique_%"] > 10)
-].sort_values(
-    "Unique",
-    ascending=False
-)
-
-print(high_cardinality.to_string(index=False))
+===== CANDIDATE FEATURE AUDIT =====
+                       Column          Dtype  Missing  Missing_%  Unique  Unique_%
+                        Group            str        0       0.00       1      0.00
+                 Company Name            str        0       0.00       1      0.00
+                        Title            str        0       0.00       4      0.02
+                       Gender            str        0       0.00       2      0.01
+                  Nationality            str        0       0.00       1      0.00
+                Resident Type            str        0       0.00       1      0.00
+               Marital Status            str        0       0.00       7      0.03
+                    City Name            str        0       0.00       8      0.04
+                   State Name            str        0       0.00       7      0.03
+                       Branch            str        0       0.00       9      0.04
+                  Site Branch            str        0       0.00       9      0.04
+                     Division            str        0       0.00       1      0.00
+                  Designation            str        0       0.00     378      1.85
+                   Department            str        0       0.00      11      0.05
+               Sub Department            str    20276      99.06       2      0.01
+                  Cost Center            str        0       0.00     668      3.26
+             Site Cost Center            str        0       0.00     668      3.26
+                    Site Name            str        0       0.00     800      3.91
+                        Grade            str        0       0.00      14      0.07
+                         Band            str        0       0.00       2      0.01
+       Reason for Requirement            str     7116      34.77       4      0.02
+            Employee Category            str        0       0.00       2      0.01
+       Reporting Manager Code            str        0       0.00     316      1.54
+       Reporting Manager Name            str        0       0.00     316      1.54
+      Skip Level Manager Code            str        0       0.00     124      0.61
+           Skip Level Manager            str        0       0.00     124      0.61
+             Actual Join Date datetime64[us]        0       0.00    2697     13.18
+              Group Join Date datetime64[us]        0       0.00    2697     13.18
+Year Of Service (Current DOJ)          int64        0       0.00      23      0.11
+  Year of Service (Group DOJ)          int64        0       0.00      23      0.11
+          Physical Disability            str        0       0.00       2      0.01
+                Point of Hire            str    18283      89.32      49      0.24
+        Point of Repatriation            str    18282      89.32      51      0.25
+                    ESIC Flag         object      123       0.60       3      0.01
+                PF Applicable            str     1178       5.76       2      0.01
+                      PF Type            str        0       0.00      12      0.06
+             Probation Status            str        1       0.00       2      0.01
+            Confirmation Date datetime64[us]     3876      18.94    1901      9.29
+               Source of Hire            str     7115      34.76       2      0.01
+             Dual Nationality            str        0       0.00       1      0.00
+                     Religion            str     7106      34.72       4      0.02
+               Agreement type        float64    20468     100.00       0      0.00
+         Effective Start Date         object        0       0.00    2113     10.32
+          Employee Air Ticket            str     8294      40.52       1      0.00
+             Air Ticket Class        float64    20468     100.00       0      0.00
+         Air Ticket frequency            str     7117      34.77       1      0.00
+                  Blood Group            str    18900      92.34       8      0.04
+      Group Medical Insurance            str    20467     100.00       1      0.00
+    Confidential Profile Flag            str    20442      99.87       1      0.00
+         Confidential Profile        float64    20468     100.00       0      0.00
+   Conf. Date (Period Master) datetime64[us]     3876      18.94    1901      9.29
+              2nd Nationality            str     8272      40.41       1      0.00
+       Employer Notice Period        float64        9       0.04       3      0.01
+                    Bank Name            str      143       0.70      90      0.44
+                Movement Type            str        0       0.00       5      0.02
+                   Birth Date datetime64[us]        0       0.00    9091     44.42
+            Last Payable Days datetime64[us]    20391      99.62      16      0.08
+                    Cost Code         object        0       0.00     651      3.18
+                  Profit Code          int64        0       0.00     632      3.09
+              Client Vertical            str        0       0.00      18      0.09
+                     Resident            str        0       0.00       3      0.01
+                    Wage Type            str       11       0.05       2      0.01
+                   TAX Regime            str       36       0.18       2      0.01
+            Uniform Deduction            str        0       0.00       2      0.01
+                 Process Name        float64    20468     100.00       0      0.00
+             Designation_form            str    13823      67.53     181      0.88
+             Cost Center_form            str    13823      67.53     483      2.36
+                  Gender_form            str    13823      67.53       2      0.01
+          Marital Status_form            str    13823      67.53       7      0.03
+                     Location            str    13823      67.53      45      0.22
+                  Region Name            str    13823      67.53       5      0.02
+               Site Name_form            str    13823      67.53     576      2.81
+              Client Verticle            str    13823      67.53      13      0.06
+               Date Of Joined datetime64[us]    13823      67.53     227      1.11
+                 Created Date datetime64[us]    13823      67.53     202      0.99
+         Monthly Gross Salary        float64    13823      67.53    1633      7.98
+          Annual_Gross_Salary        float64    13823      67.53    1633      7.98
+                  Tenure_Days        float64    13823      67.53     227      1.11
+                 Tenure_Years        float64    13823      67.53     227      1.11
+            OT1_Chargeable_OT        float64    17262      84.34     132      0.64
+         OT1_NonChargeable_OT        float64    17262      84.34     132      0.64
+                 OT1_Total_OT        float64    17262      84.34     184      0.90
+                  OT1_OT_Days        float64    17262      84.34      27      0.13
+             OT1_Avg_Daily_OT        float64    17262      84.34     184      0.90
+             OT1_Max_Daily_OT        float64    17262      84.34      29      0.14
+            OT2_Chargeable_OT        float64    17262      84.34     132      0.64
+         OT2_NonChargeable_OT        float64    17262      84.34     132      0.64
+                 OT2_Total_OT        float64    17262      84.34     184      0.90
+            OT3_Chargeable_OT        float64    15702      76.71      92      0.45
+         OT3_NonChargeable_OT        float64    15702      76.71     176      0.86
+                 OT3_Total_OT        float64    15702      76.71     195      0.95
+            OT4_Chargeable_OT        float64    15707      76.74      92      0.45
+         OT4_NonChargeable_OT        float64    15707      76.74     176      0.86
+                 OT4_Total_OT        float64    15707      76.74     195      0.95
+                  OT4_OT_Days        float64    15707      76.74      27      0.13
+             OT4_Avg_Daily_OT        float64    15707      76.74     195      0.95
+             OT4_Max_Daily_OT        float64    15707      76.74      50      0.24
+        Leave_Opening_Balance        float64     2136      10.44     127      0.62
+                Leave_Accrued        float64     2136      10.44    1185      5.79
+               Leave_Consumed        float64     2136      10.44      32      0.16
+             Leave_Adjustment        float64     2136      10.44       1      0.00
+                  Leave_Lapse        float64     2136      10.44       1      0.00
+                Leave_Balance        float64     2136      10.44    1429      6.98
+        Leave_Future_Approved        float64     2136      10.44       6      0.03
+   Leave_Balance_After_Future        float64     2136      10.44    1429      6.98
+             Leave_Encashment        float64     2136      10.44       1      0.00
+          Leave_Carry_Forward        float64     2136      10.44    1429      6.98
+           Leave_Record_Count        float64     2136      10.44       4      0.02
+             Leave_Type_Count        float64     2136      10.44       4      0.02
