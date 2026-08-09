@@ -1,1 +1,22 @@
 
+# ==========================================================
+# STEP 2: CHECK DUPLICATES AMONG ATTRITION EMPLOYEES
+# ==========================================================
+
+attrition_rows = model_base[model_base["Attrition"] == 1].copy()
+
+print("Attrition rows:", len(attrition_rows))
+print("Unique attrition employees:", attrition_rows["_emp_code"].nunique())
+
+print("\nDuplicate employee codes among attrition employees:")
+
+duplicate_attrition_codes = (
+    attrition_rows["_emp_code"]
+    .value_counts()
+    .loc[lambda x: x > 1]
+)
+
+print(duplicate_attrition_codes)
+
+print("\nNumber of duplicated attrition employee codes:",
+      len(duplicate_attrition_codes))
