@@ -1,1 +1,228 @@
 
+# ==========================================================
+# STEP 24: PREPARE MODELING DATASET
+# ==========================================================
+
+import numpy as np
+import pandas as pd
+
+# ----------------------------------------------------------
+# Start from clean features
+# ----------------------------------------------------------
+
+model_features_step24 = clean_features.copy()
+
+
+# ----------------------------------------------------------
+# Remove extremely sparse categorical fields
+# ----------------------------------------------------------
+
+sparse_cols = [
+    "Point of Hire",
+    "Point of Repatriation",
+]
+
+model_features_step24 = [
+    c for c in model_features_step24
+    if c not in sparse_cols
+]
+
+
+# ----------------------------------------------------------
+# Create working dataframe
+# ----------------------------------------------------------
+
+model_data = model_base[
+    model_features_step24 + ["Attrition"]
+].copy()
+
+
+# ==========================================================
+# 1. CONVERT EFFECTIVE START DATE TO DATETIME
+# ==========================================================
+
+if "Effective Start Date" in model_data.columns:
+
+    model_data["Effective Start Date"] = pd.to_datetime(
+        model_data["Effective Start Date"],
+        errors="coerce"
+    )
+
+
+# ==========================================================
+# 2. CREATE AGE FROM BIRTH DATE
+# ==========================================================
+
+reference_date = pd.Timestamp("2026-08-07")
+
+if "Birth Date" in model_data.columns:
+
+    model_data["Age_Years"] = (
+        reference_date - model_data["Birth Date"]
+    ).dt.days / 365.25
+
+    model_data["Age_Years"] = (
+        model_data["Age_Years"]
+        .clip(lower=18, upper=70)
+    )
+
+
+# ==========================================================
+# 3. CREATE TENURE FROM JOIN DATE
+# ==========================================================
+
+if "Actual Join Date" in model_data.columns:
+
+    model_data["Calculated_Tenure_Years"] = (
+        reference_date - model_data["Actual Join Date"]
+    ).dt.days / 365.25
+
+    model_data["Calculated_Tenure_Years"] = (
+        model_data["Calculated_Tenure_Years"]
+        .clip(lower=0)
+    )
+
+
+# ==========================================================
+# 4. CREATE CONFIRMATION STATUS
+# ==========================================================
+
+if "Confirmation Date" in model_data.columns:
+
+    model_data["Is_Confirmed"] = (
+        model_data["Confirmation Date"].notna()
+    ).astype(int)
+
+
+# ==========================================================
+# 5. CREATE OT DATA AVAILABILITY FLAGS
+# ==========================================================
+
+ot_groups = [
+    "OT1",
+    "OT2",
+    "OT3",
+    "OT4",
+]
+
+for ot in ot_groups:
+
+    total_col = f"{ot}_Total_OT"
+
+    if total_col in model_data.columns:
+
+        model_data[f"{ot}_Data_Available"] = (
+            model_data[total_col].notna()
+        ).astype(int)
+
+
+# ==========================================================
+# 6. CREATE FORM / SALARY DATA AVAILABILITY FLAG
+# ==========================================================
+
+if "Monthly Gross Salary" in model_data.columns:
+
+    model_data["Salary_Data_Available"] = (
+        model_data["Monthly Gross Salary"].notna()
+    ).astype(int)
+
+
+# ==========================================================
+# 7. CREATE LEAVE DATA AVAILABILITY FLAG
+# ==========================================================
+
+if "Leave_Balance" in model_data.columns:
+
+    model_data["Leave_Data_Available"] = (
+        model_data["Leave_Balance"].notna()
+    ).astype(int)
+
+
+# ==========================================================
+# 8. FILL OT MISSING VALUES WITH ZERO
+# ==========================================================
+
+ot_feature_cols = [
+    c for c in model_data.columns
+    if c.startswith("OT1_")
+    or c.startswith("OT2_")
+    or c.startswith("OT3_")
+    or c.startswith("OT4_")
+]
+
+for c in ot_feature_cols:
+
+    if "Data_Available" not in c:
+
+        model_data[c] = model_data[c].fillna(0)
+
+
+# ==========================================================
+# 9. FILL LEAVE NUMERIC MISSING VALUES
+# ==========================================================
+
+leave_feature_cols = [
+    c for c in model_data.columns
+    if c.startswith("Leave_")
+]
+
+for c in leave_feature_cols:
+
+    if c != "Leave_Data_Available":
+
+        model_data[c] = model_data[c].fillna(0)
+
+
+# ==========================================================
+# 10. CHECK DATASET
+# ==========================================================
+
+print("=" * 70)
+print("STEP 24: MODELING DATASET")
+print("=" * 70)
+
+print("Shape:", model_data.shape)
+
+print("\nTarget distribution:")
+print(model_data["Attrition"].value_counts())
+
+print("\nTarget percentage:")
+print(
+    model_data["Attrition"].value_counts(normalize=True)
+    .mul(100)
+    .round(2)
+)
+
+print("\nMissing target:")
+print(model_data["Attrition"].isna().sum())
+
+print("\nOT availability:")
+
+for ot in ot_groups:
+
+    flag = f"{ot}_Data_Available"
+
+    if flag in model_data.columns:
+
+        print(
+            f"{ot}:",
+            model_data[flag].value_counts().to_dict()
+        )
+
+print("\nSalary availability:")
+
+if "Salary_Data_Available" in model_data.columns:
+    print(
+        model_data["Salary_Data_Available"]
+        .value_counts()
+        .to_dict()
+    )
+
+print("\nLeave availability:")
+
+if "Leave_Data_Available" in model_data.columns:
+    print(
+        model_data["Leave_Data_Available"]
+        .value_counts()
+        .to_dict()
+    )
