@@ -1,1 +1,207 @@
 
+# ============================================================
+# STEP 47: AGGREGATED ORIGINAL FEATURE IMPORTANCE
+# ============================================================
+
+print("=" * 60)
+print("STEP 47: AGGREGATED ORIGINAL FEATURE IMPORTANCE")
+print("=" * 60)
+
+
+# ------------------------------------------------------------
+# 1. Copy feature importance
+# ------------------------------------------------------------
+
+agg_importance = feature_importance_df.copy()
+
+
+# ------------------------------------------------------------
+# 2. Extract original feature name
+# ------------------------------------------------------------
+
+def get_original_feature(feature_name):
+
+    # Remove preprocessing prefix
+    if "__" in feature_name:
+        feature_name = feature_name.split("__", 1)[1]
+
+    # For one-hot encoded categorical features,
+    # remove the category after the first "_"
+    #
+    # Example:
+    # Branch_NOIDA -> Branch
+    # City Name_Noida -> City Name
+    #
+    # Numeric features remain unchanged.
+
+    if feature_name.startswith("cat_"):
+        feature_name = feature_name.replace("cat_", "", 1)
+
+    return feature_name
+
+
+# ------------------------------------------------------------
+# IMPORTANT:
+# Better method: use transformer output names
+# and map based on the preprocessing transformers.
+# ------------------------------------------------------------
+
+numeric_features = list(
+    preprocessor
+    .named_transformers_["num"]
+    .feature_names_in_
+)
+
+categorical_features = list(
+    preprocessor
+    .named_transformers_["cat"]
+    .feature_names_in_
+)
+
+
+# ------------------------------------------------------------
+# 3. Build mapping from processed feature -> original feature
+# ------------------------------------------------------------
+
+original_feature_mapping = {}
+
+for feature in numeric_features:
+
+    processed_name = f"num__{feature}"
+
+    original_feature_mapping[processed_name] = feature
+
+
+# Get encoded categorical feature names
+ohe = (
+    preprocessor
+    .named_transformers_["cat"]
+    .named_steps["onehot"]
+)
+
+encoded_names = ohe.get_feature_names_out(
+    categorical_features
+)
+
+for encoded_name, original_feature in zip(
+    encoded_names,
+    [
+        feature
+        for feature in categorical_features
+        for _ in range(
+            len(
+                ohe.categories_[
+                    categorical_features.index(feature)
+                ]
+            )
+        )
+    ]
+):
+
+    processed_name = f"cat__{encoded_name}"
+
+    original_feature_mapping[
+        processed_name
+    ] = original_feature
+
+
+# ------------------------------------------------------------
+# 4. Map every processed feature to original column
+# ------------------------------------------------------------
+
+agg_importance["Original_Feature"] = (
+    agg_importance["Feature"]
+    .map(original_feature_mapping)
+)
+
+
+# ------------------------------------------------------------
+# 5. Check for unmapped features
+# ------------------------------------------------------------
+
+unmapped = agg_importance[
+    agg_importance["Original_Feature"].isna()
+]
+
+print(
+    f"\nUnmapped processed features: "
+    f"{len(unmapped)}"
+)
+
+
+# ------------------------------------------------------------
+# 6. Aggregate importance
+# ------------------------------------------------------------
+
+original_importance = (
+    agg_importance
+    .dropna(subset=["Original_Feature"])
+    .groupby("Original_Feature")["Importance"]
+    .sum()
+    .sort_values(ascending=False)
+    .reset_index()
+)
+
+
+# ------------------------------------------------------------
+# 7. Add percentage
+# ------------------------------------------------------------
+
+original_importance["Importance_Percentage"] = (
+    original_importance["Importance"] * 100
+)
+
+
+# ------------------------------------------------------------
+# 8. Display top 30 original features
+# ------------------------------------------------------------
+
+print("\n" + "=" * 60)
+print("TOP 30 ORIGINAL FEATURES")
+print("=" * 60)
+
+print(
+    original_importance
+    .head(30)
+    .to_string(
+        index=False,
+        formatters={
+            "Importance": "{:.6f}".format,
+            "Importance_Percentage": "{:.2f}%".format
+        }
+    )
+)
+
+
+# ------------------------------------------------------------
+# 9. Validation
+# ------------------------------------------------------------
+
+print("\n" + "=" * 60)
+print("AGGREGATED IMPORTANCE VALIDATION")
+print("=" * 60)
+
+print(
+    f"Total aggregated importance: "
+    f"{original_importance['Importance'].sum():.6f}"
+)
+
+
+# ------------------------------------------------------------
+# 10. Save results
+# ------------------------------------------------------------
+
+original_importance.to_csv(
+    "random_forest_original_feature_importance.csv",
+    index=False
+)
+
+print(
+    "\nSaved as:"
+    " random_forest_original_feature_importance.csv"
+)
+
+
+print("\n" + "=" * 60)
+print("STEP 47 SUCCESS")
+print("=" * 60)
