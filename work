@@ -1,1 +1,198 @@
+# ============================================================
+# STEP 49: CATEGORICAL FEATURE ATTRITION-RATE ANALYSIS
+# ============================================================
 
+print("=" * 60)
+print("STEP 49: CATEGORICAL FEATURE ATTRITION-RATE ANALYSIS")
+print("=" * 60)
+
+
+# ------------------------------------------------------------
+# 1. Top features from Step 47
+# ------------------------------------------------------------
+
+top_features = (
+    original_importance
+    .head(20)["Original_Feature"]
+    .tolist()
+)
+
+
+# ------------------------------------------------------------
+# 2. Identify categorical features
+# ------------------------------------------------------------
+
+categorical_features = [
+    feature
+    for feature in top_features
+    if feature in model_data.columns
+    and not pd.api.types.is_numeric_dtype(model_data[feature])
+]
+
+
+print("\nCategorical features selected:")
+for i, feature in enumerate(categorical_features, 1):
+    print(f"{i:02d}. {feature}")
+
+
+# ------------------------------------------------------------
+# 3. Minimum group size
+# ------------------------------------------------------------
+
+MIN_GROUP_SIZE = 20
+
+print(
+    f"\nMinimum employees required per category: "
+    f"{MIN_GROUP_SIZE}"
+)
+
+
+# ------------------------------------------------------------
+# 4. Calculate attrition rate by category
+# ------------------------------------------------------------
+
+all_category_results = []
+
+
+for feature in categorical_features:
+
+    temp = model_data[[feature, "Attrition"]].copy()
+
+    # Handle missing values
+    temp[feature] = temp[feature].fillna("Unknown")
+    temp[feature] = temp[feature].astype(str)
+
+    grouped = (
+        temp
+        .groupby(feature)["Attrition"]
+        .agg(
+            Employee_Count="count",
+            Attrition_Count="sum",
+            Attrition_Rate="mean"
+        )
+        .reset_index()
+    )
+
+    # Minimum group size
+    grouped = grouped[
+        grouped["Employee_Count"] >= MIN_GROUP_SIZE
+    ].copy()
+
+    if grouped.empty:
+        continue
+
+    grouped["Attrition_Rate"] = (
+        grouped["Attrition_Rate"] * 100
+    )
+
+    grouped["Feature"] = feature
+
+    grouped = grouped.rename(
+        columns={feature: "Category"}
+    )
+
+    all_category_results.append(
+        grouped[
+            [
+                "Feature",
+                "Category",
+                "Employee_Count",
+                "Attrition_Count",
+                "Attrition_Rate"
+            ]
+        ]
+    )
+
+
+# ------------------------------------------------------------
+# 5. Combine results
+# ------------------------------------------------------------
+
+if all_category_results:
+
+    categorical_attrition_analysis = pd.concat(
+        all_category_results,
+        ignore_index=True
+    )
+
+else:
+
+    categorical_attrition_analysis = pd.DataFrame(
+        columns=[
+            "Feature",
+            "Category",
+            "Employee_Count",
+            "Attrition_Count",
+            "Attrition_Rate"
+        ]
+    )
+
+
+# ------------------------------------------------------------
+# 6. Sort by attrition rate
+# ------------------------------------------------------------
+
+categorical_attrition_analysis = (
+    categorical_attrition_analysis
+    .sort_values(
+        by="Attrition_Rate",
+        ascending=False
+    )
+    .reset_index(drop=True)
+)
+
+
+# ------------------------------------------------------------
+# 7. Display top categories
+# ------------------------------------------------------------
+
+print("\n" + "=" * 60)
+print("TOP CATEGORIES BY ATTRITION RATE")
+print("=" * 60)
+
+if not categorical_attrition_analysis.empty:
+
+    display(
+        categorical_attrition_analysis.head(30)
+    )
+
+else:
+
+    print("No categorical results available.")
+
+
+# ------------------------------------------------------------
+# 8. Overall attrition rate
+# ------------------------------------------------------------
+
+overall_attrition_rate = (
+    model_data["Attrition"].mean() * 100
+)
+
+print("\n" + "=" * 60)
+print("OVERALL ATTRITION RATE")
+print("=" * 60)
+
+print(
+    f"Overall attrition rate: "
+    f"{overall_attrition_rate:.2f}%"
+)
+
+
+# ------------------------------------------------------------
+# 9. Save results
+# ------------------------------------------------------------
+
+categorical_attrition_analysis.to_csv(
+    "categorical_feature_attrition_analysis.csv",
+    index=False
+)
+
+
+print("\nSaved as:")
+print("categorical_feature_attrition_analysis.csv")
+
+
+print("\n" + "=" * 60)
+print("STEP 49 SUCCESS")
+print("=" * 60)
