@@ -1,205 +1,53 @@
+============================================================
+STEP 53: BUILDING MISSING TRAINING FEATURES
+============================================================
+Added missing categorical feature: Point of Hire
+Added missing categorical feature: Point of Repatriation
 
-# ============================================================
-# STEP 53: BUILD MISSING TRAINING FEATURES FOR PREDICTION
-# ============================================================
+Processing: Actual Join Date
 
-print("=" * 60)
-print("STEP 53: BUILDING MISSING TRAINING FEATURES")
-print("=" * 60)
+Processing: Group Join Date
 
-prediction_data = model_data.copy()
+Processing: Confirmation Date
 
-# ------------------------------------------------------------
-# 1. ADD MISSING CATEGORICAL FEATURES
-# ------------------------------------------------------------
+Processing: Effective Start Date
 
-missing_categorical = [
-    "Point of Hire",
-    "Point of Repatriation"
-]
+Processing: Conf. Date (Period Master)
 
-for col in missing_categorical:
-    if col not in prediction_data.columns:
-        prediction_data[col] = pd.NA
-        print(f"Added missing categorical feature: {col}")
+Processing: Birth Date
 
+Processing: Date Of Joined
 
-# ------------------------------------------------------------
-# 2. DATE FEATURE ENGINEERING
-# ------------------------------------------------------------
+Processing: Created Date
 
-DATE_FEATURES = {
-    "Actual Join Date": [
-        "Actual Join Date_Days",
-        "Actual Join Date_Missing"
-    ],
-    "Group Join Date": [
-        "Group Join Date_Days",
-        "Group Join Date_Missing"
-    ],
-    "Confirmation Date": [
-        "Confirmation Date_Missing"
-    ],
-    "Effective Start Date": [
-        "Effective Start Date_Days",
-        "Effective Start Date_Missing"
-    ],
-    "Conf. Date (Period Master)": [
-        "Conf. Date (Period Master)_Missing"
-    ],
-    "Birth Date": [
-        "Birth Date_Days",
-        "Birth Date_Missing"
-    ],
-    "Date Of Joined": [
-        "Date Of Joined_Days",
-        "Date Of Joined_Missing"
-    ],
-    "Created Date": [
-        "Created Date_Days",
-        "Created Date_Missing"
-    ]
-}
+============================================================
+FEATURE ALIGNMENT CHECK
+============================================================
+Training feature count: 92
+Prediction feature count: 103
 
+Missing training features:
+0
 
-# ------------------------------------------------------------
-# 3. FUNCTION TO CREATE DATE FEATURES
-# ------------------------------------------------------------
+Extra prediction columns:
+11
+['Actual Join Date', 'Group Join Date', 'Confirmation Date', 'Source of Hire', 'Effective Start Date', 'Conf. Date (Period Master)', 'Movement Type', 'Birth Date', 'Date Of Joined', 'Created Date', 'Attrition']
 
-def create_prediction_date_features(df, raw_column):
+============================================================
+FINAL PREDICTION FEATURE DATA
+============================================================
+Shape: (20468, 92)
+Expected shape: (20468, 92)
 
-    # Convert to datetime
-    dates = pd.to_datetime(
-        df[raw_column],
-        errors="coerce"
-    )
+First 10 columns:
+['Title', 'City Name', 'State Name', 'Branch', 'Site Branch', 'Designation', 'Department', 'Cost Center', 'Site Cost Center', 'Site Name']
 
-    # --------------------------------------------------------
-    # Treat clearly invalid employee dates as missing.
-    # Effective Start Date contains year 0025 in the data.
-    # --------------------------------------------------------
-    invalid_dates = dates.notna() & (
-        (dates.dt.year < 1900) |
-        (dates.dt.year > 2100)
-    )
+Last 10 columns:
+['Confirmation Date_Missing', 'Effective Start Date_Days', 'Effective Start Date_Missing', 'Conf. Date (Period Master)_Missing', 'Birth Date_Days', 'Birth Date_Missing', 'Date Of Joined_Days', 'Date Of Joined_Missing', 'Created Date_Days', 'Created Date_Missing']
 
-    dates.loc[invalid_dates] = pd.NaT
+Missing values:
+173981
 
-    # Missing flag
-    missing_flag = dates.isna().astype(int)
-
-    # Days since Unix epoch
-    days = (
-        dates - pd.Timestamp("1970-01-01")
-    ).dt.days
-
-    return days, missing_flag
-
-
-# ------------------------------------------------------------
-# 4. CREATE ENGINEERED DATE FEATURES
-# ------------------------------------------------------------
-
-for raw_column, engineered_columns in DATE_FEATURES.items():
-
-    print(f"\nProcessing: {raw_column}")
-
-    days, missing_flag = create_prediction_date_features(
-        prediction_data,
-        raw_column
-    )
-
-    # Features ending in _Days
-    for feature in engineered_columns:
-
-        if feature.endswith("_Days"):
-            prediction_data[feature] = days
-
-        elif feature.endswith("_Missing"):
-            prediction_data[feature] = missing_flag
-
-
-# ------------------------------------------------------------
-# 5. CHECK REQUIRED TRAINING FEATURES
-# ------------------------------------------------------------
-
-missing_after_engineering = [
-    col
-    for col in training_columns
-    if col not in prediction_data.columns
-]
-
-extra_prediction_columns = [
-    col
-    for col in prediction_data.columns
-    if col not in training_columns
-]
-
-print("\n" + "=" * 60)
-print("FEATURE ALIGNMENT CHECK")
-print("=" * 60)
-
-print("Training feature count:", len(training_columns))
-print("Prediction feature count:", len(prediction_data.columns))
-
-print("\nMissing training features:")
-print(len(missing_after_engineering))
-
-if missing_after_engineering:
-    for i, col in enumerate(missing_after_engineering, 1):
-        print(f"{i:02d}. {col}")
-
-print("\nExtra prediction columns:")
-print(len(extra_prediction_columns))
-
-if extra_prediction_columns:
-    print(extra_prediction_columns)
-
-
-# ------------------------------------------------------------
-# 6. STOP IF ANY TRAINING FEATURES ARE STILL MISSING
-# ------------------------------------------------------------
-
-if missing_after_engineering:
-    raise ValueError(
-        "Prediction data is still missing training features. "
-        "Do not continue."
-    )
-
-
-# ------------------------------------------------------------
-# 7. ALIGN EXACTLY TO TRAINING ORDER
-# ------------------------------------------------------------
-
-prediction_data = prediction_data[
-    training_columns
-].copy()
-
-
-# ------------------------------------------------------------
-# 8. FINAL VALIDATION
-# ------------------------------------------------------------
-
-print("\n" + "=" * 60)
-print("FINAL PREDICTION FEATURE DATA")
-print("=" * 60)
-
-print("Shape:", prediction_data.shape)
-
-print(
-    "Expected shape:",
-    (len(model_data), len(training_columns))
-)
-
-print("\nFirst 10 columns:")
-print(prediction_data.columns[:10].tolist())
-
-print("\nLast 10 columns:")
-print(prediction_data.columns[-10:].tolist())
-
-print("\nMissing values:")
-print(prediction_data.isna().sum().sum())
-
-print("\n" + "=" * 60)
-print("STEP 53 SUCCESS")
-print("=" * 60)
+============================================================
+STEP 53 SUCCESS
+============================================================
