@@ -1,1 +1,58 @@
 
+# ==========================================================
+# STEP 13A: CREATE OT2 AND OT3 FEATURES
+# ==========================================================
+
+def create_ot_summary_features(df, prefix):
+    temp = df.copy()
+
+    # Normalize employee code
+    temp["_emp_code"] = normalize_emp_code(temp["EMP CODE"])
+
+    # Convert OT columns to numeric
+    for col in ["CHARGEABLE TOTAL", "NON CHARGEABLE TOTAL", "TOTAL"]:
+        temp[col] = pd.to_numeric(temp[col], errors="coerce").fillna(0)
+
+    # Aggregate at employee level
+    features = (
+        temp.groupby("_emp_code", dropna=True)
+        .agg(
+            **{
+                f"{prefix}_Chargeable_OT": ("CHARGEABLE TOTAL", "sum"),
+                f"{prefix}_NonChargeable_OT": ("NON CHARGEABLE TOTAL", "sum"),
+                f"{prefix}_Total_OT": ("TOTAL", "sum"),
+            }
+        )
+        .reset_index()
+    )
+
+    return features
+
+
+# Create OT2 features
+ot2_features = create_ot_summary_features(
+    overtime_data2,
+    "OT2"
+)
+
+# Create OT3 features
+ot3_features = create_ot_summary_features(
+    overtime_data_3,
+    "OT3"
+)
+
+
+print("OT2 features shape:", ot2_features.shape)
+print("OT3 features shape:", ot3_features.shape)
+
+print("\nOT2 unique employees:",
+      ot2_features["_emp_code"].nunique())
+
+print("OT3 unique employees:",
+      ot3_features["_emp_code"].nunique())
+
+print("\nOT2 features:")
+print(ot2_features.head())
+
+print("\nOT3 features:")
+print(ot3_features.head())
