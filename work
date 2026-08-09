@@ -1,1 +1,148 @@
 
+# ============================================================
+# STEP 39: FEATURE CARDINALITY & IDENTIFIER AUDIT
+# ============================================================
+
+print("=" * 60)
+print("STEP 39: FEATURE CARDINALITY & IDENTIFIER AUDIT")
+print("=" * 60)
+
+
+# ------------------------------------------------------------
+# 1. Unique values in categorical columns
+# ------------------------------------------------------------
+
+categorical_cols = X_train.select_dtypes(
+    exclude=["number"]
+).columns.tolist()
+
+categorical_cardinality = pd.DataFrame({
+    "Column": categorical_cols,
+    "Unique_Count": [
+        X_train[col].nunique(dropna=True)
+        for col in categorical_cols
+    ],
+    "Missing_Count": [
+        X_train[col].isna().sum()
+        for col in categorical_cols
+    ]
+})
+
+categorical_cardinality["Unique_%"] = (
+    categorical_cardinality["Unique_Count"]
+    / len(X_train) * 100
+)
+
+categorical_cardinality = categorical_cardinality.sort_values(
+    "Unique_Count",
+    ascending=False
+)
+
+
+print("\n" + "=" * 60)
+print("CATEGORICAL COLUMN CARDINALITY")
+print("=" * 60)
+
+print(categorical_cardinality.to_string(index=False))
+
+
+# ------------------------------------------------------------
+# 2. Numeric columns with very high cardinality
+# ------------------------------------------------------------
+
+numeric_cols = X_train.select_dtypes(
+    include=["number"]
+).columns.tolist()
+
+numeric_cardinality = pd.DataFrame({
+    "Column": numeric_cols,
+    "Unique_Count": [
+        X_train[col].nunique(dropna=True)
+        for col in numeric_cols
+    ],
+    "Missing_Count": [
+        X_train[col].isna().sum()
+        for col in numeric_cols
+    ]
+})
+
+numeric_cardinality = numeric_cardinality.sort_values(
+    "Unique_Count",
+    ascending=False
+)
+
+
+print("\n" + "=" * 60)
+print("NUMERIC COLUMN CARDINALITY")
+print("=" * 60)
+
+print(numeric_cardinality.to_string(index=False))
+
+
+# ------------------------------------------------------------
+# 3. Possible identifier-like columns
+# ------------------------------------------------------------
+
+possible_id_cols = []
+
+for col in X_train.columns:
+
+    unique_count = X_train[col].nunique(dropna=True)
+    unique_ratio = unique_count / len(X_train)
+
+    col_lower = col.lower()
+
+    if (
+        unique_ratio > 0.80
+        or
+        any(word in col_lower for word in [
+            "employee code",
+            "employee id",
+            "employee no",
+            "emp code",
+            "emp id",
+            "person id",
+            "user id"
+        ])
+    ):
+        possible_id_cols.append(col)
+
+
+print("\n" + "=" * 60)
+print("POSSIBLE IDENTIFIER-LIKE COLUMNS")
+print("=" * 60)
+
+if possible_id_cols:
+    for col in possible_id_cols:
+        print(
+            f"{col:<40} "
+            f"unique={X_train[col].nunique(dropna=True)}"
+        )
+else:
+    print("No obvious identifier-like columns found.")
+
+
+# ------------------------------------------------------------
+# 4. Very high-cardinality categorical columns
+# ------------------------------------------------------------
+
+high_cardinality_cat = categorical_cardinality[
+    categorical_cardinality["Unique_%"] > 5
+]
+
+print("\n" + "=" * 60)
+print("HIGH-CARDINALITY CATEGORICAL COLUMNS")
+print("(More than 5% unique values)")
+print("=" * 60)
+
+if len(high_cardinality_cat) > 0:
+    print(
+        high_cardinality_cat.to_string(index=False)
+    )
+else:
+    print("None found.")
+
+
+print("\n" + "=" * 60)
+print("STEP 39 COMPLETE")
+print("=" * 60)
