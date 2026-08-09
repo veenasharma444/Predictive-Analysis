@@ -1,1 +1,55 @@
+print("========== RESIGNATION ==========")
 
+print("Resignation Date:")
+print(
+    pd.to_datetime(
+        resignation_data["Resignation Date"],
+        errors="coerce"
+    ).agg(["min", "max"])
+)
+
+print("\nAgreed LWD:")
+print(
+    pd.to_datetime(
+        resignation_data["Agreed Lwd"],
+        errors="coerce"
+    ).agg(["min", "max"])
+)
+
+
+print("\n========== LEAVE ==========")
+
+print("Leave Year Start:")
+print(
+    pd.to_datetime(
+        leave_data["Leave Year Start Date"],
+        errors="coerce"
+    ).agg(["min", "max"])
+)
+
+print("\nLeave Year End:")
+print(
+    pd.to_datetime(
+        leave_data["Leave Year End Date"],
+        errors="coerce"
+    ).agg(["min", "max"])
+)
+
+
+print("\n========== FORM ONE F ==========")
+
+print("Date Of Joined:")
+print(
+    pd.to_datetime(
+        form_one_f["Date Of Joined"],
+        errors="coerce"
+    ).agg(["min", "max"])
+)
+
+print("\nCreated Date:")
+print(
+    pd.to_datetime(
+        form_one_f["Created Date"],
+        errors="coerce"
+    ).agg(["min", "max"])
+)
