@@ -1,1 +1,146 @@
+# ==========================================================
+# STEP 20: CREATE CLEAN MODEL FEATURE SET
+# ==========================================================
 
+# Start from the 109 candidate features
+model_exclusions = set(final_exclusions)
+
+# ----------------------------------------------------------
+# 1. Remove sensitive / protected attributes
+# ----------------------------------------------------------
+
+sensitive_cols = [
+    "Gender",
+    "Nationality",
+    "Marital Status",
+    "Physical Disability",
+    "Dual Nationality",
+    "Religion",
+    "2nd Nationality",
+    "Blood Group",
+]
+
+# ----------------------------------------------------------
+# 2. Remove employee / manager identifiers
+# ----------------------------------------------------------
+
+identifier_cols = [
+    "Reporting Manager Code",
+    "Reporting Manager Name",
+    "Skip Level Manager Code",
+    "Skip Level Manager",
+]
+
+# ----------------------------------------------------------
+# 3. Remove raw date columns
+# ----------------------------------------------------------
+
+raw_date_cols = [
+    "Actual Join Date",
+    "Group Join Date",
+    "Birth Date",
+    "Confirmation Date",
+    "Effective Start Date",
+    "Conf. Date (Period Master)",
+    "Date Of Joined",
+    "Created Date",
+    "Last Payable Days",
+]
+
+# ----------------------------------------------------------
+# 4. Remove completely empty / practically empty columns
+# ----------------------------------------------------------
+
+empty_cols = [
+    "Agreement type",
+    "Air Ticket Class",
+    "Group Medical Insurance",
+    "Confidential Profile",
+    "Process Name",
+]
+
+very_high_missing_cols = [
+    "Sub Department",
+    "Point of Hire",
+    "Point of Repatriation",
+    "Blood Group",
+    "Confidential Profile Flag",
+]
+
+# ----------------------------------------------------------
+# 5. Remove fields with almost no useful variation
+# ----------------------------------------------------------
+
+low_information_cols = [
+    "Group",
+    "Company Name",
+    "Resident Type",
+    "Division",
+    "Nationality",
+    "Dual Nationality",
+    "2nd Nationality",
+    "Employee Air Ticket",
+    "Air Ticket frequency",
+]
+
+# ----------------------------------------------------------
+# 6. Remove redundant Form copies
+# ----------------------------------------------------------
+
+redundant_form_cols = [
+    "Designation_form",
+    "Cost Center_form",
+    "Gender_form",
+    "Marital Status_form",
+    "Site Name_form",
+    "Client Verticle",
+]
+
+# ----------------------------------------------------------
+# 7. Remove financial / personal identifiers
+# ----------------------------------------------------------
+
+financial_identifier_cols = [
+    "Bank Name",
+]
+
+# ----------------------------------------------------------
+# Combine all exclusions
+# ----------------------------------------------------------
+
+model_exclusions.update(sensitive_cols)
+model_exclusions.update(identifier_cols)
+model_exclusions.update(raw_date_cols)
+model_exclusions.update(empty_cols)
+model_exclusions.update(very_high_missing_cols)
+model_exclusions.update(low_information_cols)
+model_exclusions.update(redundant_form_cols)
+model_exclusions.update(financial_identifier_cols)
+
+# Only keep columns that actually exist
+model_exclusions = [
+    col for col in model_exclusions
+    if col in model_base.columns
+]
+
+# ----------------------------------------------------------
+# Final feature list
+# ----------------------------------------------------------
+
+model_features = [
+    col for col in model_base.columns
+    if col not in model_exclusions
+]
+
+print("==================================================")
+print("FINAL MODEL FEATURE SUMMARY")
+print("==================================================")
+
+print("Original columns:", len(model_base.columns))
+print("Excluded columns:", len(model_exclusions))
+print("Final model features:", len(model_features))
+
+print("\nFINAL MODEL FEATURES:")
+
+for i, col in enumerate(model_features, 1):
+    print(f"{i:3}. {col}")
