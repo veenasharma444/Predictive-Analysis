@@ -1,1 +1,23 @@
+# ============================================================
+# STEP 35A: CHECK EFFECTIVE START DATE FORMAT
+# ============================================================
 
+print("=" * 60)
+print("CHECKING EFFECTIVE START DATE")
+print("=" * 60)
+
+col = "Effective Start Date"
+
+print("\nOriginal dtype:")
+print(model_data_clean[col].dtype)
+
+print("\nSample values:")
+print(model_data_clean[col].dropna().head(20).to_list())
+
+print("\nUnique sample values:")
+print(model_data_clean[col].dropna().astype(str).unique()[:30])
+
+print("\nValues containing 2-digit year pattern:")
+for value in model_data_clean[col].dropna().astype(str).unique():
+    if len(value) >= 8:
+        print(value)
