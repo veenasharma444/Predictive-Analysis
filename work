@@ -1,1 +1,89 @@
+# ============================================================
+# STEP 46: RANDOM FOREST FEATURE IMPORTANCE
+# ============================================================
 
+print("=" * 60)
+print("STEP 46: RANDOM FOREST FEATURE IMPORTANCE")
+print("=" * 60)
+
+# ------------------------------------------------------------
+# 1. Get feature names from preprocessing pipeline
+# ------------------------------------------------------------
+
+feature_names = preprocessor.get_feature_names_out()
+
+print(f"\nNumber of processed feature names: {len(feature_names)}")
+print(f"Number of model features: {len(rf_model.feature_importances_)}")
+
+
+# ------------------------------------------------------------
+# 2. Create feature importance dataframe
+# ------------------------------------------------------------
+
+feature_importance_df = pd.DataFrame({
+    "Feature": feature_names,
+    "Importance": rf_model.feature_importances_
+})
+
+
+# ------------------------------------------------------------
+# 3. Sort by importance
+# ------------------------------------------------------------
+
+feature_importance_df = (
+    feature_importance_df
+    .sort_values(
+        by="Importance",
+        ascending=False
+    )
+    .reset_index(drop=True)
+)
+
+
+# ------------------------------------------------------------
+# 4. Display top 30 features
+# ------------------------------------------------------------
+
+print("\n" + "=" * 60)
+print("TOP 30 MOST IMPORTANT FEATURES")
+print("=" * 60)
+
+print(
+    feature_importance_df.head(30).to_string(
+        index=False
+    )
+)
+
+
+# ------------------------------------------------------------
+# 5. Total importance check
+# ------------------------------------------------------------
+
+print("\n" + "=" * 60)
+print("FEATURE IMPORTANCE VALIDATION")
+print("=" * 60)
+
+print(
+    f"Total importance: "
+    f"{feature_importance_df['Importance'].sum():.6f}"
+)
+
+
+# ------------------------------------------------------------
+# 6. Save complete feature importance
+# ------------------------------------------------------------
+
+feature_importance_df.to_csv(
+    "random_forest_feature_importance.csv",
+    index=False
+)
+
+print(
+    "\nFeature importance saved as:"
+    " random_forest_feature_importance.csv"
+)
+
+
+print("\n" + "=" * 60)
+print("STEP 46 SUCCESS")
+print("=" * 60)
