@@ -1,102 +1,200 @@
+============================================================
+STEP 52: DATE FEATURE ENGINEERING VALIDATION
+============================================================
 
-# ============================================================
-# STEP 52: IDENTIFY DATE FEATURE ENGINEERING USED IN TRAINING
-# ============================================================
+Training engineered date features:
+------------------------------------------------------------
 
-print("=" * 60)
-print("STEP 52: DATE FEATURE ENGINEERING VALIDATION")
-print("=" * 60)
+RAW COLUMN: Actual Join Date
+Raw column exists in model_data
+Non-null dates: 20468
+Min date: 2004-06-01 00:00:00
+Max date: 2026-08-31 00:00:00
 
-date_feature_pairs = {
-    "Actual Join Date": [
-        "Actual Join Date_Days",
-        "Actual Join Date_Missing"
-    ],
-    "Group Join Date": [
-        "Group Join Date_Days",
-        "Group Join Date_Missing"
-    ],
-    "Confirmation Date": [
-        "Confirmation Date_Missing"
-    ],
-    "Effective Start Date": [
-        "Effective Start Date_Days",
-        "Effective Start Date_Missing"
-    ],
-    "Conf. Date (Period Master)": [
-        "Conf. Date (Period Master)_Missing"
-    ],
-    "Birth Date": [
-        "Birth Date_Days",
-        "Birth Date_Missing"
-    ],
-    "Date Of Joined": [
-        "Date Of Joined_Days",
-        "Date Of Joined_Missing"
-    ],
-    "Created Date": [
-        "Created Date_Days",
-        "Created Date_Missing"
-    ]
-}
+  Actual Join Date_Days
+  dtype: int64
+  min: 12570
+  max: 20696
+  unique sample: [20629 20430 20485 18233 20605 20640 20497 20563 19266 20544]
 
-print("\nTraining engineered date features:")
-print("-" * 60)
+  Actual Join Date_Missing
+  dtype: int64
+  min: 0
+  max: 0
+  unique sample: [0]
 
-for raw_col, engineered_cols in date_feature_pairs.items():
+RAW COLUMN: Group Join Date
+Raw column exists in model_data
+Non-null dates: 20468
+Min date: 2004-06-01 00:00:00
+Max date: 2026-08-31 00:00:00
 
-    print(f"\nRAW COLUMN: {raw_col}")
+  Group Join Date_Days
+  dtype: int64
+  min: 12570
+  max: 20696
+  unique sample: [20629 20430 20485 18233 20605 20640 20497 20563 19266 20544]
 
-    if raw_col in model_data.columns:
-        print("Raw column exists in model_data")
+  Group Join Date_Missing
+  dtype: int64
+  min: 0
+  max: 0
+  unique sample: [0]
 
-        raw_values = pd.to_datetime(
-            model_data[raw_col],
-            errors="coerce"
-        )
+RAW COLUMN: Confirmation Date
+Raw column exists in model_data
+Non-null dates: 16592
+Min date: 2004-06-01 00:00:00
+Max date: 2027-01-23 00:00:00
 
-        print("Non-null dates:", raw_values.notna().sum())
-        print("Min date:", raw_values.min())
-        print("Max date:", raw_values.max())
+  Confirmation Date_Missing
+  dtype: int64
+  min: 0
+  max: 1
+  unique sample: [0 1]
 
-    else:
-        print("Raw column NOT available in model_data")
+RAW COLUMN: Effective Start Date
+Raw column exists in model_data
+Non-null dates: 20468
+Min date: 0025-12-01 00:00:00
+Max date: 2026-08-31 00:00:00
 
-    for feature in engineered_cols:
+  Effective Start Date_Days
+  dtype: int64
+  min: 16366
+  max: 20696
+  unique sample: [20629 20430 20485 18358 20605 20640 20497 20563 19604 20544]
 
-        if feature in X_train_clean.columns:
+  Effective Start Date_Missing
+  dtype: int64
+  min: 0
+  max: 0
+  unique sample: [0]
 
-            values = X_train_clean[feature]
+RAW COLUMN: Conf. Date (Period Master)
+Raw column exists in model_data
+Non-null dates: 16592
+Min date: 2004-06-01 00:00:00
+Max date: 2027-01-23 00:00:00
 
-            print(f"\n  {feature}")
-            print("  dtype:", values.dtype)
-            print("  min:", values.min())
-            print("  max:", values.max())
-            print("  unique sample:",
-                  values.dropna().unique()[:10])
+  Conf. Date (Period Master)_Missing
+  dtype: int64
+  min: 0
+  max: 1
+  unique sample: [0 1]
 
-        else:
-            print(f"  {feature} NOT FOUND in X_train_clean")
+RAW COLUMN: Birth Date
+Raw column exists in model_data
+Non-null dates: 20468
+Min date: 1960-01-01 00:00:00
+Max date: 2009-03-22 00:00:00
 
+  Birth Date_Days
+  dtype: int64
+  min: -3653
+  max: 14325
+  unique sample: [ 7202  -214  6940  6062  2712  9510  8766  2215 11018 11546]
 
-print("\n" + "=" * 60)
-print("POINT OF HIRE / REPATRIATION")
-print("=" * 60)
+  Birth Date_Missing
+  dtype: int64
+  min: 0
+  max: 0
+  unique sample: [0]
 
-for col in ["Point of Hire", "Point of Repatriation"]:
+RAW COLUMN: Date Of Joined
+Raw column exists in model_data
+Non-null dates: 6645
+Min date: 2025-12-22 00:00:00
+Max date: 2026-08-31 00:00:00
 
-    print(f"\n{col}")
+  Date Of Joined_Days
+  dtype: float64
+  min: 20449.0
+  max: 20696.0
+  unique sample: [20629. 20485. 20605. 20640. 20497. 20563. 20635. 20502. 20593. 20613.]
 
-    if col in X_train_clean.columns:
-        print("Present in training data")
-        print("dtype:", X_train_clean[col].dtype)
-        print("Unique values:")
-        print(X_train_clean[col].value_counts(dropna=False).head(20))
+  Date Of Joined_Missing
+  dtype: int64
+  min: 0
+  max: 1
+  unique sample: [0 1]
 
-    else:
-        print("NOT FOUND")
+RAW COLUMN: Created Date
+Raw column exists in model_data
+Non-null dates: 6645
+Min date: 2026-01-14 00:00:00
+Max date: 2026-08-07 00:00:00
 
+  Created Date_Days
+  dtype: float64
+  min: 20467.0
+  max: 20672.0
+  unique sample: [20633. 20489. 20598. 20640. 20507. 20568. 20635. 20508. 20592. 20603.]
 
-print("\n" + "=" * 60)
-print("STEP 52 COMPLETE")
-print("=" * 60)
+  Created Date_Missing
+  dtype: int64
+  min: 0
+  max: 1
+  unique sample: [0 1]
+
+============================================================
+POINT OF HIRE / REPATRIATION
+============================================================
+
+Point of Hire
+Present in training data
+dtype: str
+Unique values:
+Point of Hire
+NaN                   14651
+Mumbai                  481
+Noida                   209
+Puri                    193
+Bhubaneswar             143
+Pune                    123
+Ahmedabad                85
+Haryana                  85
+Jaipur                   80
+Chennai                  64
+Cuttack                  57
+Hyderabad                26
+Delhi                    21
+Bangalore                19
+Thiruvananthapuram       16
+Nagpur                   14
+Surat                    13
+Aurangabad               11
+Uttar Pradesh            11
+Indore                    9
+Name: count, dtype: int64
+
+Point of Repatriation
+Present in training data
+dtype: str
+Unique values:
+Point of Repatriation
+NaN                   14649
+Mumbai                  481
+Noida                   209
+Puri                    193
+Bhubaneswar             143
+Pune                    124
+Ahmedabad                85
+Haryana                  81
+Jaipur                   80
+Chennai                  64
+Cuttack                  57
+Hyderabad                26
+Delhi                    20
+Bangalore                19
+Thiruvananthapuram       16
+Nagpur                   14
+Surat                    13
+Aurangabad               11
+Uttar Pradesh            11
+Indore                    9
+Name: count, dtype: int64
+
+============================================================
+STEP 52 COMPLETE
+============================================================
