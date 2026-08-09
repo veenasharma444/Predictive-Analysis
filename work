@@ -1,1 +1,84 @@
 
+# ==========================================================
+# STEP 18: FEATURE AUDIT BEFORE RANDOM FOREST
+# ==========================================================
+
+# Target
+target_col = "Attrition"
+
+# Columns that should NOT be used as model features
+exclude_cols = [
+    # Target
+    "Attrition",
+
+    # Attrition / outcome leakage
+    "Resignation Date",
+    "Last Working Date",
+    "FNF Settlement Date",
+    "Employee Status",
+    "Leave Status",
+    "Effective End Date",
+    "Employee Status_form",
+
+    # Employee identifiers
+    "Employee Code",
+    "Employee_Code_Clean",
+    "_emp_code",
+
+    # Personal identifiers / PII
+    "First Name",
+    "Middle Name",
+    "Last Name",
+    "Employee Name",
+    "Preferred Name",
+    "Official Email Address",
+    "Personal Email Address",
+    "Personal Mobile Number",
+    "Emergency Contact Number",
+    "PAN Number",
+    "Aadhar Card No",
+    "Account Number",
+    "IFSC Code",
+    "PF Number",
+    "UAN Number",
+    "ESIC Number",
+    "Father Name",
+    "Permanent Address",
+    "Current Address",
+    "Correspondence Address",
+]
+
+# Check which requested exclusions actually exist
+existing_exclusions = [
+    col for col in exclude_cols
+    if col in model_base.columns
+]
+
+missing_exclusions = [
+    col for col in exclude_cols
+    if col not in model_base.columns
+]
+
+print("Total columns:", len(model_base.columns))
+
+print("\nColumns excluded:", len(existing_exclusions))
+
+print("\nExcluded columns:")
+for col in existing_exclusions:
+    print("-", col)
+
+print("\nColumns not found:")
+for col in missing_exclusions:
+    print("-", col)
+
+# Candidate features
+candidate_features = [
+    col for col in model_base.columns
+    if col not in existing_exclusions
+]
+
+print("\nCandidate feature count:", len(candidate_features))
+
+print("\nCandidate features:")
+for i, col in enumerate(candidate_features, 1):
+    print(f"{i:3}. {col}")
