@@ -1,115 +1,129 @@
+============================================================
+STEP 21: CLEAN FEATURE SUMMARY
+============================================================
+Features before cleaning: 101
+Features removed: 22
+Features remaining: 79
 
-# ==========================================================
-# STEP 21: CLEAN FINAL MODEL FEATURES
-# ==========================================================
+============================================================
+CONSTANT FEATURES REMOVED
+============================================================
+Group
+Company Name
+Resident Type
+Division
+Agreement type
+Employee Air Ticket
+Air Ticket Class
+Air Ticket frequency
+Group Medical Insurance
+Confidential Profile Flag
+Confidential Profile
+Process Name
+Leave_Adjustment
+Leave_Lapse
+Leave_Encashment
 
-# Start from the 101 features created in Step 20
-clean_features = final_model_features.copy()
+============================================================
+HIGH-MISSING FEATURES REMOVED (>=90%)
+============================================================
+Sub Department: 99.06%
+Agreement type: 100.00%
+Air Ticket Class: 100.00%
+Group Medical Insurance: 100.00%
+Confidential Profile Flag: 99.87%
+Confidential Profile: 100.00%
+Last Payable Days: 99.62%
+Process Name: 100.00%
 
+============================================================
+HIGH-MISSING FORM FEATURES REMOVED
+============================================================
+Designation_form: 67.53%
+Cost Center_form: 67.53%
+Gender_form: 67.53%
+Marital Status_form: 67.53%
+Site Name_form: 67.53%
 
-# ==========================================================
-# 1. REMOVE CONSTANT / ZERO-VARIANCE FEATURES
-# ==========================================================
-
-constant_cols = [
-    c for c in clean_features
-    if model_base[c].nunique(dropna=True) <= 1
-]
-
-
-# ==========================================================
-# 2. REMOVE EXTREMELY HIGH-MISSING FEATURES
-# ==========================================================
-
-missing_pct = model_base[clean_features].isna().mean() * 100
-
-high_missing_cols = missing_pct[
-    missing_pct >= 90
-].index.tolist()
-
-
-# ==========================================================
-# 3. REMOVE DUPLICATE SENSITIVE / PROTECTED FORM COLUMNS
-# ==========================================================
-
-sensitive_form_cols = {
-    "Gender_form",
-    "Marital Status_form",
-}
-
-
-# ==========================================================
-# 4. REMOVE FORM COLUMNS WITH VERY HIGH MISSINGNESS
-# ==========================================================
-
-high_missing_form_cols = [
-    c for c in clean_features
-    if c.endswith("_form") and missing_pct[c] > 60
-]
-
-
-# ==========================================================
-# 5. COMBINE EXCLUSIONS
-# ==========================================================
-
-step21_exclusions = (
-    set(constant_cols)
-    | set(high_missing_cols)
-    | sensitive_form_cols
-    | set(high_missing_form_cols)
-)
-
-
-# ==========================================================
-# 6. CREATE CLEAN FEATURES
-# ==========================================================
-
-clean_features = [
-    c for c in clean_features
-    if c not in step21_exclusions
-]
-
-
-# ==========================================================
-# 7. FINAL SUMMARY
-# ==========================================================
-
-print("=" * 60)
-print("STEP 21: CLEAN FEATURE SUMMARY")
-print("=" * 60)
-
-print("Features before cleaning:", len(final_model_features))
-print("Features removed:", len(step21_exclusions))
-print("Features remaining:", len(clean_features))
-
-
-print("\n" + "=" * 60)
-print("CONSTANT FEATURES REMOVED")
-print("=" * 60)
-
-for c in constant_cols:
-    print(c)
-
-
-print("\n" + "=" * 60)
-print("HIGH-MISSING FEATURES REMOVED (>=90%)")
-print("=" * 60)
-
-for c in high_missing_cols:
-    print(f"{c}: {missing_pct[c]:.2f}%")
-
-
-print("\n" + "=" * 60)
-print("HIGH-MISSING FORM FEATURES REMOVED")
-print("=" * 60)
-
-for c in high_missing_form_cols:
-    print(f"{c}: {missing_pct[c]:.2f}%")
-
-
-print("\n" + "=" * 60)
-print("FINAL CLEAN FEATURES")
-print("=" * 60)
-
-for i, c in enumerate(clean_features, 1):
-    print(f"{i:3}. {c}")
+============================================================
+FINAL CLEAN FEATURES
+============================================================
+  1. Title
+  2. City Name
+  3. State Name
+  4. Branch
+  5. Site Branch
+  6. Designation
+  7. Department
+  8. Cost Center
+  9. Site Cost Center
+ 10. Site Name
+ 11. Grade
+ 12. Band
+ 13. Reason for Requirement
+ 14. Employee Category
+ 15. Reporting Manager Code
+ 16. Reporting Manager Name
+ 17. Skip Level Manager Code
+ 18. Skip Level Manager
+ 19. Actual Join Date
+ 20. Group Join Date
+ 21. Year Of Service (Current DOJ)
+ 22. Year of Service (Group DOJ)
+ 23. Point of Hire
+ 24. Point of Repatriation
+ 25. ESIC Flag
+ 26. PF Applicable
+ 27. PF Type
+ 28. Probation Status
+ 29. Confirmation Date
+ 30. Source of Hire
+ 31. Effective Start Date
+ 32. Conf. Date (Period Master)
+ 33. Employer Notice Period
+ 34. Bank Name
+ 35. Movement Type
+ 36. Birth Date
+ 37. Cost Code
+ 38. Profit Code
+ 39. Client Vertical
+ 40. Resident
+ 41. Wage Type
+ 42. TAX Regime
+ 43. Uniform Deduction
+ 44. Location
+ 45. Region Name
+ 46. Client Verticle
+ 47. Date Of Joined
+ 48. Created Date
+ 49. Monthly Gross Salary
+ 50. Annual_Gross_Salary
+ 51. Tenure_Days
+ 52. Tenure_Years
+ 53. OT1_Chargeable_OT
+ 54. OT1_NonChargeable_OT
+ 55. OT1_Total_OT
+ 56. OT1_OT_Days
+ 57. OT1_Avg_Daily_OT
+ 58. OT1_Max_Daily_OT
+ 59. OT2_Chargeable_OT
+ 60. OT2_NonChargeable_OT
+ 61. OT2_Total_OT
+ 62. OT3_Chargeable_OT
+ 63. OT3_NonChargeable_OT
+ 64. OT3_Total_OT
+ 65. OT4_Chargeable_OT
+ 66. OT4_NonChargeable_OT
+ 67. OT4_Total_OT
+ 68. OT4_OT_Days
+ 69. OT4_Avg_Daily_OT
+ 70. OT4_Max_Daily_OT
+ 71. Leave_Opening_Balance
+ 72. Leave_Accrued
+ 73. Leave_Consumed
+ 74. Leave_Balance
+ 75. Leave_Future_Approved
+ 76. Leave_Balance_After_Future
+ 77. Leave_Carry_Forward
+ 78. Leave_Record_Count
+ 79. Leave_Type_Count
