@@ -1,1 +1,47 @@
 
+# ==========================================================
+# STEP 19: AUDIT CANDIDATE FEATURES
+# ==========================================================
+
+audit_rows = []
+
+for col in candidate_features:
+
+    s = model_base[col]
+
+    audit_rows.append({
+        "Column": col,
+        "Dtype": str(s.dtype),
+        "Missing": int(s.isna().sum()),
+        "Missing_%": round(s.isna().mean() * 100, 2),
+        "Unique": int(s.nunique(dropna=True)),
+        "Unique_%": round(
+            s.nunique(dropna=True) / len(model_base) * 100, 2
+        )
+    })
+
+feature_audit = pd.DataFrame(audit_rows)
+
+print("Feature audit shape:", feature_audit.shape)
+
+print("\n===== CANDIDATE FEATURE AUDIT =====")
+print(feature_audit.to_string(index=False))
+
+
+
+
+///////
+# ==========================================================
+# HIGH-CARDINALITY FEATURES
+# ==========================================================
+
+print("===== HIGH CARDINALITY FEATURES =====")
+
+high_cardinality = feature_audit[
+    (feature_audit["Unique_%"] > 10)
+].sort_values(
+    "Unique",
+    ascending=False
+)
+
+print(high_cardinality.to_string(index=False))
