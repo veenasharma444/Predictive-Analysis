@@ -1,3 +1,40 @@
+======================================================================
+STEP 26: TRAIN / TEST SPLIT + PREPROCESSING
+======================================================================
+
+TRAINING SET
+Shape: (16374, 94)
+
+Training target distribution:
+Attrition
+0    16196
+1      178
+Name: count, dtype: int64
+
+Training target percentage:
+Attrition
+0    98.91
+1     1.09
+Name: proportion, dtype: float64
+
+----------------------------------------------------------------------
+
+TEST SET
+Shape: (4094, 94)
+
+Test target distribution:
+Attrition
+0    4049
+1      45
+Name: count, dtype: int64
+
+Test target percentage:
+Attrition
+0    98.9
+1     1.1
+Name: proportion, dtype: float64
+
+
 ---------------------------------------------------------------------------
 TypeError                                 Traceback (most recent call last)
 File c:\Users\veena.sharma\AppData\Local\Programs\Python\Python312\Lib\site-packages\sklearn\utils\_encode.py:183, in _unique_python(values, return_inverse, return_counts)
