@@ -1,1 +1,35 @@
 
+# ==========================================================
+# STEP 15: MERGE LEAVE FEATURES INTO MODEL BASE
+# ==========================================================
+
+# Make sure employee codes are normalized
+leave_features["_emp_code"] = normalize_emp_code(
+    leave_features["_emp_code"]
+)
+
+# Check duplicate employee codes before merge
+print(
+    "Duplicate employee codes in leave_features:",
+    leave_features["_emp_code"].duplicated().sum()
+)
+
+# Merge Leave features
+model_base = model_base.merge(
+    leave_features,
+    on="_emp_code",
+    how="left",
+    validate="one_to_one"
+)
+
+print("\nModel base shape after Leave merge:", model_base.shape)
+
+print(
+    "\nEmployees with Leave data:",
+    model_base["Leave_Record_Count"].notna().sum()
+)
+
+print(
+    "Employees without Leave data:",
+    model_base["Leave_Record_Count"].isna().sum()
+)
