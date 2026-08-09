@@ -1,185 +1,177 @@
+======================================================================
+STEP 25: BUILD MODEL INPUTS
+======================================================================
 
-# ==========================================================
-# STEP 25: BUILD X AND y FOR RANDOM FOREST
-# ==========================================================
+Date columns to transform:
+ - Actual Join Date
+ - Group Join Date
+ - Confirmation Date
+ - Effective Start Date
+ - Conf. Date (Period Master)
+ - Birth Date
+ - Date Of Joined
+ - Created Date
 
-import pandas as pd
-import numpy as np
+======================================================================
+MODEL INPUT SUMMARY
+======================================================================
+X shape: (20468, 94)
+y shape: (20468,)
 
-print("=" * 70)
-print("STEP 25: BUILD MODEL INPUTS")
-print("=" * 70)
+Target distribution:
+Attrition
+0    20245
+1      223
+Name: count, dtype: int64
 
+Target percentages:
+Attrition
+0    98.91
+1     1.09
+Name: proportion, dtype: float64
 
-# ==========================================================
-# 1. COPY MODEL DATA
-# ==========================================================
+Categorical features: 34
+Numeric features: 60
 
-rf_data = model_data.copy()
+Categorical columns:
+  1. Title
+  2. City Name
+  3. State Name
+  4. Branch
+  5. Site Branch
+  6. Designation
+  7. Department
+  8. Cost Center
+  9. Site Cost Center
+ 10. Site Name
+ 11. Grade
+ 12. Band
+ 13. Reason for Requirement
+ 14. Employee Category
+ 15. Reporting Manager Code
+ 16. Reporting Manager Name
+ 17. Skip Level Manager Code
+ 18. Skip Level Manager
+ 19. ESIC Flag
+ 20. PF Applicable
+ 21. PF Type
+ 22. Probation Status
+ 23. Source of Hire
+ 24. Bank Name
+ 25. Movement Type
+ 26. Cost Code
+ 27. Client Vertical
+ 28. Resident
+ 29. Wage Type
+ 30. TAX Regime
+ 31. Uniform Deduction
+ 32. Location
+ 33. Region Name
+ 34. Client Verticle
 
+Numeric columns:
+  1. Year Of Service (Current DOJ)
+  2. Year of Service (Group DOJ)
+  3. Employer Notice Period
+  4. Profit Code
+  5. Monthly Gross Salary
+  6. Annual_Gross_Salary
+  7. Tenure_Days
+  8. Tenure_Years
+  9. OT1_Chargeable_OT
+ 10. OT1_NonChargeable_OT
+ 11. OT1_Total_OT
+ 12. OT1_OT_Days
+ 13. OT1_Avg_Daily_OT
+ 14. OT1_Max_Daily_OT
+ 15. OT2_Chargeable_OT
+ 16. OT2_NonChargeable_OT
+ 17. OT2_Total_OT
+ 18. OT3_Chargeable_OT
+ 19. OT3_NonChargeable_OT
+ 20. OT3_Total_OT
+ 21. OT4_Chargeable_OT
+ 22. OT4_NonChargeable_OT
+ 23. OT4_Total_OT
+ 24. OT4_OT_Days
+ 25. OT4_Avg_Daily_OT
+ 26. OT4_Max_Daily_OT
+ 27. Leave_Opening_Balance
+ 28. Leave_Accrued
+ 29. Leave_Consumed
+ 30. Leave_Balance
+ 31. Leave_Future_Approved
+ 32. Leave_Balance_After_Future
+ 33. Leave_Carry_Forward
+ 34. Leave_Record_Count
+ 35. Leave_Type_Count
+ 36. Age_Years
+ 37. Calculated_Tenure_Years
+ 38. Is_Confirmed
+ 39. OT1_Data_Available
+ 40. OT2_Data_Available
+ 41. OT3_Data_Available
+ 42. OT4_Data_Available
+ 43. Salary_Data_Available
+ 44. Leave_Data_Available
+ 45. Actual Join Date_Days
+ 46. Actual Join Date_Missing
+ 47. Group Join Date_Days
+ 48. Group Join Date_Missing
+ 49. Confirmation Date_Days
+ 50. Confirmation Date_Missing
+ 51. Effective Start Date_Days
+ 52. Effective Start Date_Missing
+ 53. Conf. Date (Period Master)_Days
+ 54. Conf. Date (Period Master)_Missing
+ 55. Birth Date_Days
+ 56. Birth Date_Missing
+ 57. Date Of Joined_Days
+ 58. Date Of Joined_Missing
+ 59. Created Date_Days
+ 60. Created Date_Missing
 
-# ==========================================================
-# 2. TARGET
-# ==========================================================
+======================================================================
+REMAINING OBJECT / STRING COLUMNS
+======================================================================
+Title: dtype=str, unique=4, missing=0
+City Name: dtype=str, unique=8, missing=0
+State Name: dtype=str, unique=7, missing=0
+Branch: dtype=str, unique=9, missing=0
+Site Branch: dtype=str, unique=9, missing=0
+Designation: dtype=str, unique=378, missing=0
+Department: dtype=str, unique=11, missing=0
+Cost Center: dtype=str, unique=668, missing=0
+Site Cost Center: dtype=str, unique=668, missing=0
+Site Name: dtype=str, unique=800, missing=0
+Grade: dtype=str, unique=14, missing=0
+Band: dtype=str, unique=2, missing=0
+Reason for Requirement: dtype=str, unique=4, missing=7116
+Employee Category: dtype=str, unique=2, missing=0
+Reporting Manager Code: dtype=str, unique=316, missing=0
+Reporting Manager Name: dtype=str, unique=316, missing=0
+Skip Level Manager Code: dtype=str, unique=124, missing=0
+Skip Level Manager: dtype=str, unique=124, missing=0
+ESIC Flag: dtype=object, unique=3, missing=123
+PF Applicable: dtype=str, unique=2, missing=1178
+PF Type: dtype=str, unique=12, missing=0
+Probation Status: dtype=str, unique=2, missing=1
+Source of Hire: dtype=str, unique=2, missing=7115
+Bank Name: dtype=str, unique=90, missing=143
+Movement Type: dtype=str, unique=5, missing=0
+Cost Code: dtype=object, unique=651, missing=0
+Client Vertical: dtype=str, unique=18, missing=0
+Resident: dtype=str, unique=3, missing=0
+Wage Type: dtype=str, unique=2, missing=11
+TAX Regime: dtype=str, unique=2, missing=36
+Uniform Deduction: dtype=str, unique=2, missing=0
+Location: dtype=str, unique=45, missing=13823
+Region Name: dtype=str, unique=5, missing=13823
+Client Verticle: dtype=str, unique=13, missing=13823
 
-y = rf_data["Attrition"].astype(int)
-
-X = rf_data.drop(
-    columns=["Attrition"]
-).copy()
-
-
-# ==========================================================
-# 3. CONVERT DATE FEATURES INTO NUMERIC FEATURES
-# ==========================================================
-
-date_columns = [
-    c for c in X.columns
-    if pd.api.types.is_datetime64_any_dtype(X[c])
-]
-
-
-print("\nDate columns to transform:")
-
-for c in date_columns:
-    print(" -", c)
-
-
-# Use a fixed reference date for reproducibility
-reference_date = pd.Timestamp("2026-08-07")
-
-
-for c in date_columns:
-
-    # Convert date to number of days from reference date
-    X[c + "_Days"] = (
-        reference_date - X[c]
-    ).dt.days
-
-    # Missing date indicator
-    X[c + "_Missing"] = (
-        X[c].isna()
-    ).astype(int)
-
-    # Remove original datetime column
-    X.drop(
-        columns=[c],
-        inplace=True
-    )
-
-
-# ==========================================================
-# 4. CHECK EFFECTIVE START DATE
-# ==========================================================
-
-# It was originally object, but Step 24 converted it.
-# If anything still remains as object but looks like a date,
-# we will handle it later rather than silently encoding it.
-
-
-# ==========================================================
-# 5. IDENTIFY CATEGORICAL / NUMERIC FEATURES
-# ==========================================================
-
-categorical_features = [
-    c for c in X.columns
-    if (
-        pd.api.types.is_object_dtype(X[c])
-        or pd.api.types.is_string_dtype(X[c])
-        or isinstance(X[c].dtype, pd.CategoricalDtype)
-    )
-]
-
-
-numeric_features = [
-    c for c in X.columns
-    if c not in categorical_features
-]
-
-
-# ==========================================================
-# 6. PRINT SUMMARY
-# ==========================================================
-
-print("\n" + "=" * 70)
-print("MODEL INPUT SUMMARY")
-print("=" * 70)
-
-print("X shape:", X.shape)
-print("y shape:", y.shape)
-
-print("\nTarget distribution:")
-print(y.value_counts())
-
-print("\nTarget percentages:")
-print(
-    y.value_counts(normalize=True)
-    .mul(100)
-    .round(2)
-)
-
-print("\nCategorical features:", len(categorical_features))
-print("Numeric features:", len(numeric_features))
-
-print("\nCategorical columns:")
-
-for i, c in enumerate(categorical_features, 1):
-    print(f"{i:3}. {c}")
-
-print("\nNumeric columns:")
-
-for i, c in enumerate(numeric_features, 1):
-    print(f"{i:3}. {c}")
-
-
-# ==========================================================
-# 7. CHECK REMAINING OBJECT COLUMNS
-# ==========================================================
-
-print("\n" + "=" * 70)
-print("REMAINING OBJECT / STRING COLUMNS")
-print("=" * 70)
-
-for c in categorical_features:
-
-    print(
-        f"{c}: "
-        f"dtype={X[c].dtype}, "
-        f"unique={X[c].nunique(dropna=True)}, "
-        f"missing={X[c].isna().sum()}"
-    )
-
-
-# ==========================================================
-# 8. FINAL SAFETY CHECK
-# ==========================================================
-
-print("\n" + "=" * 70)
-print("SAFETY CHECK")
-print("=" * 70)
-
-print("Target column present in X:", "Attrition" in X.columns)
-
-print(
-    "Employee identity columns accidentally present:",
-    [
-        c for c in [
-            "Employee Code",
-            "Employee_Code_Clean",
-            "_emp_code"
-        ]
-        if c in X.columns
-    ]
-)
-
-print(
-    "Resignation leakage columns present:",
-    [
-        c for c in [
-            "Resignation Date",
-            "Last Working Date",
-            "FNF Settlement Date"
-        ]
-        if c in X.columns
-    ]
-)
+======================================================================
+SAFETY CHECK
+======================================================================
+Target column present in X: False
+Employee identity columns accidentally present: []
+Resignation leakage columns present: []
