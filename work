@@ -1,47 +1,220 @@
+============================================================
+STEP 51: PREDICTION PIPELINE COMPATIBILITY CHECK
+============================================================
 
-# ============================================================
-# STEP 51: FINAL PREDICTION DATA - PIPELINE COMPATIBILITY CHECK
-# ============================================================
+MODEL DATA
+------------------------------------------------------------
+Shape: (20468, 87)
 
-print("=" * 60)
-print("STEP 51: PREDICTION PIPELINE COMPATIBILITY CHECK")
-print("=" * 60)
+Training feature count: 92
+Training feature count: 92
 
-print("\nMODEL DATA")
-print("-" * 60)
-print("Shape:", model_data.shape)
+Missing training features in model_data:
+Count: 16
+01. Point of Hire
+02. Point of Repatriation
+03. Actual Join Date_Days
+04. Actual Join Date_Missing
+05. Group Join Date_Days
+06. Group Join Date_Missing
+07. Confirmation Date_Missing
+08. Effective Start Date_Days
+09. Effective Start Date_Missing
+10. Conf. Date (Period Master)_Missing
+11. Birth Date_Days
+12. Birth Date_Missing
+13. Date Of Joined_Days
+14. Date Of Joined_Missing
+15. Created Date_Days
+16. Created Date_Missing
 
-print("\nTraining feature count:", len(X_train_clean.columns))
-print("Training feature count:", X_train_clean.shape[1])
+============================================================
+RAW COLUMNS AVAILABLE IN MODEL_DATA
+============================================================
+01. Title
+02. City Name
+03. State Name
+04. Branch
+05. Site Branch
+06. Designation
+07. Department
+08. Cost Center
+09. Site Cost Center
+10. Site Name
+11. Grade
+12. Band
+13. Reason for Requirement
+14. Employee Category
+15. Reporting Manager Code
+16. Reporting Manager Name
+17. Skip Level Manager Code
+18. Skip Level Manager
+19. Actual Join Date
+20. Group Join Date
+21. Year Of Service (Current DOJ)
+22. Year of Service (Group DOJ)
+23. ESIC Flag
+24. PF Applicable
+25. PF Type
+26. Probation Status
+27. Confirmation Date
+28. Source of Hire
+29. Effective Start Date
+30. Conf. Date (Period Master)
+31. Employer Notice Period
+32. Bank Name
+33. Movement Type
+34. Birth Date
+35. Cost Code
+36. Profit Code
+37. Client Vertical
+38. Resident
+39. Wage Type
+40. TAX Regime
+41. Uniform Deduction
+42. Location
+43. Region Name
+44. Client Verticle
+45. Date Of Joined
+46. Created Date
+47. Monthly Gross Salary
+48. Annual_Gross_Salary
+49. Tenure_Days
+50. Tenure_Years
+51. OT1_Chargeable_OT
+52. OT1_NonChargeable_OT
+53. OT1_Total_OT
+54. OT1_OT_Days
+55. OT1_Avg_Daily_OT
+56. OT1_Max_Daily_OT
+57. OT2_Chargeable_OT
+58. OT2_NonChargeable_OT
+59. OT2_Total_OT
+60. OT3_Chargeable_OT
+61. OT3_NonChargeable_OT
+62. OT3_Total_OT
+63. OT4_Chargeable_OT
+64. OT4_NonChargeable_OT
+65. OT4_Total_OT
+66. OT4_OT_Days
+67. OT4_Avg_Daily_OT
+68. OT4_Max_Daily_OT
+69. Leave_Opening_Balance
+70. Leave_Accrued
+71. Leave_Consumed
+72. Leave_Balance
+73. Leave_Future_Approved
+74. Leave_Balance_After_Future
+75. Leave_Carry_Forward
+76. Leave_Record_Count
+77. Leave_Type_Count
+78. Attrition
+79. Age_Years
+80. Calculated_Tenure_Years
+81. Is_Confirmed
+82. OT1_Data_Available
+83. OT2_Data_Available
+84. OT3_Data_Available
+85. OT4_Data_Available
+86. Salary_Data_Available
+87. Leave_Data_Available
 
-print("\nMissing training features in model_data:")
-missing_features = [
-    col for col in X_train_clean.columns
-    if col not in model_data.columns
-]
+============================================================
+TRAINING FEATURES
+============================================================
+01. Title
+02. City Name
+03. State Name
+04. Branch
+05. Site Branch
+06. Designation
+07. Department
+08. Cost Center
+09. Site Cost Center
+10. Site Name
+11. Grade
+12. Band
+13. Reason for Requirement
+14. Employee Category
+15. Reporting Manager Code
+16. Reporting Manager Name
+17. Skip Level Manager Code
+18. Skip Level Manager
+19. Year Of Service (Current DOJ)
+20. Year of Service (Group DOJ)
+21. Point of Hire
+22. Point of Repatriation
+23. ESIC Flag
+24. PF Applicable
+25. PF Type
+26. Probation Status
+27. Employer Notice Period
+28. Bank Name
+29. Cost Code
+30. Profit Code
+31. Client Vertical
+32. Resident
+33. Wage Type
+34. TAX Regime
+35. Uniform Deduction
+36. Location
+37. Region Name
+38. Client Verticle
+39. Monthly Gross Salary
+40. Annual_Gross_Salary
+41. Tenure_Days
+42. Tenure_Years
+43. OT1_Chargeable_OT
+44. OT1_NonChargeable_OT
+45. OT1_Total_OT
+46. OT1_OT_Days
+47. OT1_Avg_Daily_OT
+48. OT1_Max_Daily_OT
+49. OT2_Chargeable_OT
+50. OT2_NonChargeable_OT
+51. OT2_Total_OT
+52. OT3_Chargeable_OT
+53. OT3_NonChargeable_OT
+54. OT3_Total_OT
+55. OT4_Chargeable_OT
+56. OT4_NonChargeable_OT
+57. OT4_Total_OT
+58. OT4_OT_Days
+59. OT4_Avg_Daily_OT
+60. OT4_Max_Daily_OT
+61. Leave_Opening_Balance
+62. Leave_Accrued
+63. Leave_Consumed
+64. Leave_Balance
+65. Leave_Future_Approved
+66. Leave_Balance_After_Future
+67. Leave_Carry_Forward
+68. Leave_Record_Count
+69. Leave_Type_Count
+70. Age_Years
+71. Calculated_Tenure_Years
+72. Is_Confirmed
+73. OT1_Data_Available
+74. OT2_Data_Available
+75. OT3_Data_Available
+76. OT4_Data_Available
+77. Salary_Data_Available
+78. Leave_Data_Available
+79. Actual Join Date_Days
+80. Actual Join Date_Missing
+81. Group Join Date_Days
+82. Group Join Date_Missing
+83. Confirmation Date_Missing
+84. Effective Start Date_Days
+85. Effective Start Date_Missing
+86. Conf. Date (Period Master)_Missing
+87. Birth Date_Days
+88. Birth Date_Missing
+89. Date Of Joined_Days
+90. Date Of Joined_Missing
+91. Created Date_Days
+92. Created Date_Missing
 
-print("Count:", len(missing_features))
-
-for i, col in enumerate(missing_features, 1):
-    print(f"{i:02d}. {col}")
-
-
-print("\n" + "=" * 60)
-print("RAW COLUMNS AVAILABLE IN MODEL_DATA")
-print("=" * 60)
-
-for i, col in enumerate(model_data.columns, 1):
-    print(f"{i:02d}. {col}")
-
-
-print("\n" + "=" * 60)
-print("TRAINING FEATURES")
-print("=" * 60)
-
-for i, col in enumerate(X_train_clean.columns, 1):
-    print(f"{i:02d}. {col}")
-
-
-print("\n" + "=" * 60)
-print("STEP 51 DIAGNOSTIC COMPLETE")
-print("=" * 60)
+============================================================
+STEP 51 DIAGNOSTIC COMPLETE
+============================================================
