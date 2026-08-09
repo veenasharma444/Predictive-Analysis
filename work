@@ -1,1 +1,178 @@
 
+# ==========================================================
+# STEP 20: CREATE CLEAN MODEL FEATURE SET
+# ==========================================================
+
+# IMPORTANT:
+# Start ONLY from the 109 candidate features.
+# Do NOT start again from all 140 model_base columns.
+
+candidate_features = [
+    c for c in candidate_features
+    if c in model_base.columns
+]
+
+print("Candidate features available:", len(candidate_features))
+
+
+# ==========================================================
+# 1. TARGET COLUMN
+# ==========================================================
+
+target_col = "Attrition"
+
+
+# ==========================================================
+# 2. REMOVE IDENTIFIERS / PERSONAL INFORMATION
+# ==========================================================
+
+identifier_cols = {
+    "Employee Code",
+    "Employee_Code_Clean",
+    "_emp_code",
+
+    "First Name",
+    "Middle Name",
+    "Last Name",
+    "Employee Name",
+    "Preferred Name",
+
+    "Official Email Address",
+    "Personal Email Address",
+    "Personal Mobile Number",
+    "Emergency Contact Number",
+
+    "PAN Number",
+    "Aadhar Card No",
+    "Account Number",
+    "IFSC Code",
+    "PF Number",
+    "UAN Number",
+    "ESIC Number",
+
+    "Father Name",
+
+    "Permanent Address",
+    "Current Address",
+    "Correspondence Address",
+}
+
+
+# ==========================================================
+# 3. REMOVE TARGET / DATA LEAKAGE COLUMNS
+# ==========================================================
+
+leakage_cols = {
+    "Attrition",
+
+    "Resignation Date",
+    "Last Working Date",
+    "FNF Settlement Date",
+
+    "Employee Status",
+    "Employee Status_form",
+
+    "Leave Status",
+    "Effective End Date",
+}
+
+
+# ==========================================================
+# 4. REMOVE SENSITIVE / PROTECTED ATTRIBUTES
+# ==========================================================
+
+sensitive_cols = {
+    "Gender",
+    "Nationality",
+    "Marital Status",
+    "Physical Disability",
+    "Dual Nationality",
+    "Religion",
+    "2nd Nationality",
+    "Blood Group",
+}
+
+
+# ==========================================================
+# 5. COMBINE EXCLUSIONS
+# ==========================================================
+
+model_exclusions = (
+    identifier_cols
+    | leakage_cols
+    | sensitive_cols
+)
+
+
+# ==========================================================
+# 6. CREATE FINAL MODEL FEATURES
+# ==========================================================
+
+final_model_features = [
+    c for c in candidate_features
+    if c not in model_exclusions
+]
+
+
+# ==========================================================
+# 7. SAFETY CHECKS
+# ==========================================================
+
+# Target must NEVER be present
+assert target_col not in final_model_features
+
+# Leakage columns must NEVER be present
+leakage_found = [
+    c for c in final_model_features
+    if c in leakage_cols
+]
+
+assert len(leakage_found) == 0, (
+    f"Leakage columns found: {leakage_found}"
+)
+
+# Identifier columns must NEVER be present
+identifier_found = [
+    c for c in final_model_features
+    if c in identifier_cols
+]
+
+assert len(identifier_found) == 0, (
+    f"Identifier columns found: {identifier_found}"
+)
+
+
+# ==========================================================
+# 8. FINAL SUMMARY
+# ==========================================================
+
+print("=" * 60)
+print("FINAL MODEL FEATURE SUMMARY")
+print("=" * 60)
+
+print("Original columns:", len(model_base.columns))
+print("Candidate features:", len(candidate_features))
+print("Excluded from candidates:", len(candidate_features) - len(final_model_features))
+print("Final model features:", len(final_model_features))
+
+print("\nFINAL MODEL FEATURES:")
+
+for i, col in enumerate(final_model_features, 1):
+    print(f"{i:3}. {col}")
+
+
+# ==========================================================
+# 9. SHOW EXCLUDED CANDIDATES
+# ==========================================================
+
+excluded_from_candidates = [
+    c for c in candidate_features
+    if c in model_exclusions
+]
+
+print("\n" + "=" * 60)
+print("EXCLUDED CANDIDATE FEATURES")
+print("=" * 60)
+
+for i, col in enumerate(excluded_from_candidates, 1):
+    print(f"{i:3}. {col}")
