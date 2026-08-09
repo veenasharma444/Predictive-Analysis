@@ -1,1 +1,115 @@
 
+# ==========================================================
+# STEP 21: CLEAN FINAL MODEL FEATURES
+# ==========================================================
+
+# Start from the 101 features created in Step 20
+clean_features = final_model_features.copy()
+
+
+# ==========================================================
+# 1. REMOVE CONSTANT / ZERO-VARIANCE FEATURES
+# ==========================================================
+
+constant_cols = [
+    c for c in clean_features
+    if model_base[c].nunique(dropna=True) <= 1
+]
+
+
+# ==========================================================
+# 2. REMOVE EXTREMELY HIGH-MISSING FEATURES
+# ==========================================================
+
+missing_pct = model_base[clean_features].isna().mean() * 100
+
+high_missing_cols = missing_pct[
+    missing_pct >= 90
+].index.tolist()
+
+
+# ==========================================================
+# 3. REMOVE DUPLICATE SENSITIVE / PROTECTED FORM COLUMNS
+# ==========================================================
+
+sensitive_form_cols = {
+    "Gender_form",
+    "Marital Status_form",
+}
+
+
+# ==========================================================
+# 4. REMOVE FORM COLUMNS WITH VERY HIGH MISSINGNESS
+# ==========================================================
+
+high_missing_form_cols = [
+    c for c in clean_features
+    if c.endswith("_form") and missing_pct[c] > 60
+]
+
+
+# ==========================================================
+# 5. COMBINE EXCLUSIONS
+# ==========================================================
+
+step21_exclusions = (
+    set(constant_cols)
+    | set(high_missing_cols)
+    | sensitive_form_cols
+    | set(high_missing_form_cols)
+)
+
+
+# ==========================================================
+# 6. CREATE CLEAN FEATURES
+# ==========================================================
+
+clean_features = [
+    c for c in clean_features
+    if c not in step21_exclusions
+]
+
+
+# ==========================================================
+# 7. FINAL SUMMARY
+# ==========================================================
+
+print("=" * 60)
+print("STEP 21: CLEAN FEATURE SUMMARY")
+print("=" * 60)
+
+print("Features before cleaning:", len(final_model_features))
+print("Features removed:", len(step21_exclusions))
+print("Features remaining:", len(clean_features))
+
+
+print("\n" + "=" * 60)
+print("CONSTANT FEATURES REMOVED")
+print("=" * 60)
+
+for c in constant_cols:
+    print(c)
+
+
+print("\n" + "=" * 60)
+print("HIGH-MISSING FEATURES REMOVED (>=90%)")
+print("=" * 60)
+
+for c in high_missing_cols:
+    print(f"{c}: {missing_pct[c]:.2f}%")
+
+
+print("\n" + "=" * 60)
+print("HIGH-MISSING FORM FEATURES REMOVED")
+print("=" * 60)
+
+for c in high_missing_form_cols:
+    print(f"{c}: {missing_pct[c]:.2f}%")
+
+
+print("\n" + "=" * 60)
+print("FINAL CLEAN FEATURES")
+print("=" * 60)
+
+for i, c in enumerate(clean_features, 1):
+    print(f"{i:3}. {c}")
