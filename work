@@ -1,1 +1,25 @@
+# Convert Agreed LWD to datetime
+resignation_data["Agreed_Lwd_Date"] = pd.to_datetime(
+    resignation_data["Agreed Lwd"],
+    errors="coerce"
+)
 
+cutoff_date = pd.Timestamp("2026-07-31")
+
+print("Agreed LWD before/on 31-Jul-2026:")
+print(
+    (resignation_data["Agreed_Lwd_Date"] <= cutoff_date).sum()
+)
+
+print("\nAgreed LWD after 31-Jul-2026:")
+print(
+    (resignation_data["Agreed_Lwd_Date"] > cutoff_date).sum()
+)
+
+print("\nAgreed LWD by month:")
+print(
+    resignation_data["Agreed_Lwd_Date"]
+    .dt.to_period("M")
+    .value_counts()
+    .sort_index()
+)
