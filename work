@@ -1,15 +1,1 @@
 
-# ==========================================================
-# STEP 13: CHECK OT FEATURE DATASETS
-# ==========================================================
-
-print("OT1 features:", ot1_features.shape)
-print("OT2 features:", ot2_features.shape)
-print("OT3 features:", ot3_features.shape)
-print("OT4 features:", ot4_features.shape)
-
-print("\nUnique employees:")
-print("OT1:", ot1_features["_emp_code"].nunique())
-print("OT2:", ot2_features["_emp_code"].nunique())
-print("OT3:", ot3_features["_emp_code"].nunique())
-print("OT4:", ot4_features["_emp_code"].nunique())
