@@ -1,163 +1,50 @@
-# ==========================================================
-# STEP 29: RANDOM FOREST FEATURE IMPORTANCE
-# ==========================================================
+============================================================
+STEP 29: RANDOM FOREST FEATURE IMPORTANCE
+============================================================
 
-import pandas as pd
-import numpy as np
+Number of encoded features: 4263
+Number of encoded feature names: 4263
 
-print("=" * 60)
-print("STEP 29: RANDOM FOREST FEATURE IMPORTANCE")
-print("=" * 60)
+============================================================
+TOP 30 PREDICTIVE FACTORS
+============================================================
+ Rank                Original_Feature  Importance  Importance_%
+    1                   Movement Type    0.156699     15.669943
+    2       Effective Start Date_Days    0.061295      6.129519
+    3                   Leave_Accrued    0.037537      3.753696
+    4             Leave_Carry_Forward    0.031949      3.194904
+    5                   Leave_Balance    0.029393      2.939260
+    6                     Cost Center    0.028043      2.804305
+    7      Leave_Balance_After_Future    0.027007      2.700710
+    8         Skip Level Manager Code    0.026743      2.674262
+    9                       Site Name    0.026627      2.662711
+   10                       Cost Code    0.026495      2.649514
+   11          Reporting Manager Name    0.026081      2.608137
+   12                Site Cost Center    0.025886      2.588584
+   13              Skip Level Manager    0.025262      2.526193
+   14          Reporting Manager Code    0.024275      2.427546
+   15                 Client Vertical    0.019464      1.946371
+   16                     Site Branch    0.018180      1.818010
+   17            Group Join Date_Days    0.017238      1.723765
+   18         Calculated_Tenure_Years    0.017131      1.713093
+   19           Actual Join Date_Days    0.016128      1.612837
+   20                       City Name    0.015993      1.599253
+   21                          Branch    0.015576      1.557618
+   22          Confirmation Date_Days    0.015187      1.518749
+   23 Conf. Date (Period Master)_Days    0.014283      1.428312
+   24                     Designation    0.013737      1.373662
+   25                     Region Name    0.012980      1.297975
+   26                      State Name    0.012977      1.297657
+   27                 Client Verticle    0.012011      1.201108
+   28                       Age_Years    0.010028      1.002816
+   29                 Birth Date_Days    0.009527      0.952694
+   30                     Tenure_Days    0.009224      0.922425
 
+============================================================
+IMPORTANCE CHECK
+============================================================
+Total encoded importance: 0.9999999999999998
+Total aggregated importance: 0.9999999999999999
 
-# ==========================================================
-# 1. GET FEATURE IMPORTANCE FROM RANDOM FOREST
-# ==========================================================
-
-encoded_importance = rf_model.feature_importances_
-
-print("\nNumber of encoded features:",
-      len(encoded_importance))
-
-
-# ==========================================================
-# 2. GET ENCODED FEATURE NAMES
-# ==========================================================
-
-encoded_feature_names = preprocessor.get_feature_names_out()
-
-print("Number of encoded feature names:",
-      len(encoded_feature_names))
-
-
-# Safety check
-assert len(encoded_importance) == len(encoded_feature_names), \
-    "Feature importance and feature names count do not match."
-
-
-# ==========================================================
-# 3. CREATE ENCODED IMPORTANCE DATAFRAME
-# ==========================================================
-
-importance_df = pd.DataFrame({
-    "Encoded_Feature": encoded_feature_names,
-    "Importance": encoded_importance
-})
-
-
-# ==========================================================
-# 4. MAP ENCODED FEATURES BACK TO ORIGINAL FEATURES
-# ==========================================================
-
-def get_original_feature(encoded_name):
-
-    # Remove ColumnTransformer prefix
-    if "__" in encoded_name:
-        encoded_name = encoded_name.split("__", 1)[1]
-
-    # Check categorical features first
-    for col in categorical_features:
-        if encoded_name == col or encoded_name.startswith(col + "_"):
-            return col
-
-    # Check numeric features
-    for col in numeric_features:
-        if encoded_name == col:
-            return col
-
-    # Fallback
-    return encoded_name
-
-
-importance_df["Original_Feature"] = (
-    importance_df["Encoded_Feature"]
-    .apply(get_original_feature)
-)
-
-
-# ==========================================================
-# 5. AGGREGATE IMPORTANCE
-# ==========================================================
-
-feature_importance = (
-    importance_df
-    .groupby("Original_Feature", as_index=False)["Importance"]
-    .sum()
-    .sort_values(
-        "Importance",
-        ascending=False
-    )
-    .reset_index(drop=True)
-)
-
-
-# ==========================================================
-# 6. CONVERT TO PERCENTAGE
-# ==========================================================
-
-feature_importance["Importance_%"] = (
-    feature_importance["Importance"] * 100
-)
-
-
-# ==========================================================
-# 7. ADD RANK
-# ==========================================================
-
-feature_importance.insert(
-    0,
-    "Rank",
-    range(1, len(feature_importance) + 1)
-)
-
-
-# ==========================================================
-# 8. DISPLAY TOP 30 PREDICTIVE FACTORS
-# ==========================================================
-
-print("\n" + "=" * 60)
-print("TOP 30 PREDICTIVE FACTORS")
-print("=" * 60)
-
-print(
-    feature_importance[
-        [
-            "Rank",
-            "Original_Feature",
-            "Importance",
-            "Importance_%"
-        ]
-    ].head(30).to_string(index=False)
-)
-
-
-# ==========================================================
-# 9. CHECK TOTAL IMPORTANCE
-# ==========================================================
-
-print("\n" + "=" * 60)
-print("IMPORTANCE CHECK")
-print("=" * 60)
-
-print(
-    "Total encoded importance:",
-    encoded_importance.sum()
-)
-
-print(
-    "Total aggregated importance:",
-    feature_importance["Importance"].sum()
-)
-
-
-# ==========================================================
-# 10. SAVE FEATURE IMPORTANCE
-# ==========================================================
-
-feature_importance.to_excel(
-    "random_forest_feature_importance.xlsx",
-    index=False
-)
-
-print("\nSaved:")
-print("random_forest_feature_importance.xlsx")
+Saved:
+random_forest_feature_importance.xlsx
