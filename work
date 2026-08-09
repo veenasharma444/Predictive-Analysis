@@ -1,2 +1,35 @@
 
+# Normalize the Employee Code columns
+employee_master["Employee_Code_Clean"] = normalize_emp_code(
+    employee_master["Employee Code"]
+)
 
+resignation_data["Employee_Code_Clean"] = normalize_emp_code(
+    resignation_data["Employee Code"]
+)
+
+# Find resignation records that DO match Employee Master
+resignation_matches = resignation_data[
+    resignation_data["Employee_Code_Clean"].isin(
+        set(employee_master["Employee_Code_Clean"].dropna())
+    )
+].copy()
+
+print("Matching resignation rows:", len(resignation_matches))
+print(
+    "Unique matching resigned employees:",
+    resignation_matches["Employee_Code_Clean"].nunique()
+)
+
+print("\nSample matching resignation records:")
+print(
+    resignation_matches[
+        [
+            "Employee Code",
+            "Employee Name",
+            "Resignation Date",
+            "Resignation Status",
+            "Resignation Reason"
+        ]
+    ].head(10)
+)
