@@ -1,1 +1,21 @@
 
+# ==========================================================
+# STEP 10: KEEP ONLY MATCHABLE FORM EMPLOYEES
+# ==========================================================
+
+form_features_clean = form_features[
+    form_features["_emp_code"].notna()
+].copy()
+
+print("Form features before cleaning:", len(form_features))
+print("Form features after cleaning:", len(form_features_clean))
+
+print(
+    "Unique employee codes:",
+    form_features_clean["_emp_code"].nunique()
+)
+
+print(
+    "Duplicate employee codes:",
+    form_features_clean["_emp_code"].duplicated().sum()
+)
