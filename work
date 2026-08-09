@@ -1,1 +1,64 @@
+# ============================================================
+# STEP 35B: FIX YEAR 0025 IN EFFECTIVE START DATE
+# ============================================================
 
+col = "Effective Start Date"
+
+print("=" * 60)
+print("CHECKING FOR INVALID YEAR VALUES")
+print("=" * 60)
+
+# Find dates where year is less than 1900
+invalid_mask = model_data_clean[col].notna() & (
+    model_data_clean[col].dt.year < 1900
+)
+
+print(f"\nInvalid date rows found: {invalid_mask.sum()}")
+
+if invalid_mask.sum() > 0:
+    print("\nInvalid dates found:")
+    print(model_data_clean.loc[invalid_mask, col].value_counts())
+
+    # Specifically fix year 0025 -> 2025
+    def fix_invalid_year(x):
+        if pd.isna(x):
+            return x
+
+        if x.year == 25:
+            return x.replace(year=2025)
+
+        return x
+
+    model_data_clean[col] = model_data_clean[col].apply(fix_invalid_year)
+
+    print("\nCorrected year 0025 -> 2025")
+
+# Convert to standard pandas datetime
+model_data_clean[col] = pd.to_datetime(
+    model_data_clean[col],
+    errors="coerce"
+)
+
+print("\n" + "=" * 60)
+print("VALIDATION")
+print("=" * 60)
+
+print("\nDtype:")
+print(model_data_clean[col].dtype)
+
+print("\nMinimum date:")
+print(model_data_clean[col].min())
+
+print("\nMaximum date:")
+print(model_data_clean[col].max())
+
+print("\nDates before 1900:")
+print(
+    (model_data_clean[col].notna() &
+     (model_data_clean[col].dt.year < 1900)).sum()
+)
+
+print("\nMissing dates:")
+print(model_data_clean[col].isna().sum())
+
+print("\nDate correction completed successfully.")
