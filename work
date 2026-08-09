@@ -1,11 +1,1 @@
-# Find the Step 55 transformed prediction variable
 
-print("Variables with shape (20468, 4354):")
-print("=" * 60)
-
-for name, obj in list(globals().items()):
-    try:
-        if hasattr(obj, "shape") and obj.shape == (20468, 4354):
-            print(name, "->", type(obj).__name__, obj.shape)
-    except Exception:
-        pass
