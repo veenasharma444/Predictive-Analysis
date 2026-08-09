@@ -1,1 +1,55 @@
 
+# ============================================================
+# STEP 54: FIND FITTED PREPROCESSOR
+# ============================================================
+
+print("=" * 60)
+print("STEP 54: FINDING FITTED PREPROCESSOR")
+print("=" * 60)
+
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+
+preprocessor_candidates = []
+
+# IMPORTANT:
+# Convert globals() to a list first so the dictionary
+# cannot change while we iterate through it.
+
+for name, obj in list(globals().items()):
+
+    try:
+
+        if isinstance(obj, ColumnTransformer):
+            preprocessor_candidates.append(
+                (name, type(obj).__name__)
+            )
+
+        elif isinstance(obj, Pipeline):
+            preprocessor_candidates.append(
+                (name, type(obj).__name__)
+            )
+
+    except Exception:
+        pass
+
+
+print("\nPreprocessing candidates found:")
+print("-" * 60)
+
+if not preprocessor_candidates:
+
+    print("NO PREPROCESSOR FOUND")
+
+else:
+
+    for name, obj_type in preprocessor_candidates:
+
+        print(f"Variable: {name}")
+        print(f"Type:     {obj_type}")
+        print("-" * 40)
+
+
+print("\n" + "=" * 60)
+print("STEP 54 COMPLETE")
+print("=" * 60)
