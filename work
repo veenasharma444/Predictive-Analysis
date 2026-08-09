@@ -1,1 +1,101 @@
+# ==========================================================
+# STEP 22: FINAL FEATURE QUALITY CHECK
+# ==========================================================
 
+print("=" * 70)
+print("STEP 22: FINAL FEATURE QUALITY CHECK")
+print("=" * 70)
+
+feature_audit_final = pd.DataFrame({
+    "Column": clean_features,
+    "Dtype": [str(model_base[c].dtype) for c in clean_features],
+    "Missing": [model_base[c].isna().sum() for c in clean_features],
+    "Missing_%": [
+        round(model_base[c].isna().mean() * 100, 2)
+        for c in clean_features
+    ],
+    "Unique": [
+        model_base[c].nunique(dropna=True)
+        for c in clean_features
+    ],
+})
+
+feature_audit_final["Unique_%"] = (
+    feature_audit_final["Unique"]
+    / len(model_base)
+    * 100
+).round(2)
+
+
+# ----------------------------------------------------------
+# Sort by missing percentage
+# ----------------------------------------------------------
+
+print("\n===== FEATURES SORTED BY MISSING % =====")
+
+print(
+    feature_audit_final
+    .sort_values("Missing_%", ascending=False)
+    .to_string(index=False)
+)
+
+
+# ----------------------------------------------------------
+# High-cardinality categorical columns
+# ----------------------------------------------------------
+
+categorical_cols = [
+    c for c in clean_features
+    if model_base[c].dtype == "object"
+    or str(model_base[c].dtype).startswith("string")
+]
+
+
+high_cardinality = (
+    feature_audit_final[
+        feature_audit_final["Column"].isin(categorical_cols)
+    ]
+    .sort_values("Unique", ascending=False)
+)
+
+
+print("\n===== HIGH CARDINALITY CATEGORICAL FEATURES =====")
+
+print(
+    high_cardinality[
+        ["Column", "Dtype", "Missing_%", "Unique", "Unique_%"]
+    ].head(30).to_string(index=False)
+)
+
+
+# ----------------------------------------------------------
+# Numeric features
+# ----------------------------------------------------------
+
+numeric_cols = [
+    c for c in clean_features
+    if c not in categorical_cols
+]
+
+print("\n===== NUMERIC FEATURES =====")
+print("Count:", len(numeric_cols))
+
+print("\n===== CATEGORICAL FEATURES =====")
+print("Count:", len(categorical_cols))
+
+
+# ----------------------------------------------------------
+# Date-like columns
+# ----------------------------------------------------------
+
+date_cols = [
+    c for c in clean_features
+    if "date" in c.lower()
+    or "doj" in c.lower()
+    or "birth" in c.lower()
+]
+
+print("\n===== DATE-LIKE FEATURES =====")
+
+for c in date_cols:
+    print(c)
