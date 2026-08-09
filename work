@@ -1,142 +1,165 @@
+======================================================================
+STEP 23: MODEL FEATURE PREPARATION
+======================================================================
 
-# ==========================================================
-# STEP 23: PREPARE FEATURES FOR MODELING
-# ==========================================================
+DATE COLUMNS:
+ - Actual Join Date
+ - Group Join Date
+ - Year Of Service (Current DOJ)
+ - Year of Service (Group DOJ)
+ - Confirmation Date
+ - Effective Start Date
+ - Conf. Date (Period Master)
+ - Birth Date
+ - Date Of Joined
+ - Created Date
 
-import pandas as pd
-import numpy as np
+======================================================================
+FEATURE TYPE SUMMARY
+======================================================================
+Total model features: 79
+Date features: 10
+Categorical features: 36
+Numeric features: 33
 
-# Start with the 79 clean features
-model_features = clean_features.copy()
+CATEGORICAL FEATURES:
+  1. Title
+  2. City Name
+  3. State Name
+  4. Branch
+  5. Site Branch
+  6. Designation
+  7. Department
+  8. Cost Center
+  9. Site Cost Center
+ 10. Site Name
+ 11. Grade
+ 12. Band
+ 13. Reason for Requirement
+ 14. Employee Category
+ 15. Reporting Manager Code
+ 16. Reporting Manager Name
+ 17. Skip Level Manager Code
+ 18. Skip Level Manager
+ 19. Point of Hire
+ 20. Point of Repatriation
+ 21. ESIC Flag
+ 22. PF Applicable
+ 23. PF Type
+ 24. Probation Status
+ 25. Source of Hire
+ 26. Bank Name
+ 27. Movement Type
+ 28. Cost Code
+ 29. Client Vertical
+ 30. Resident
+ 31. Wage Type
+ 32. TAX Regime
+ 33. Uniform Deduction
+ 34. Location
+ 35. Region Name
+ 36. Client Verticle
 
-print("=" * 70)
-print("STEP 23: MODEL FEATURE PREPARATION")
-print("=" * 70)
+NUMERIC FEATURES:
+  1. Employer Notice Period
+  2. Profit Code
+  3. Monthly Gross Salary
+  4. Annual_Gross_Salary
+  5. Tenure_Days
+  6. Tenure_Years
+  7. OT1_Chargeable_OT
+  8. OT1_NonChargeable_OT
+  9. OT1_Total_OT
+ 10. OT1_OT_Days
+ 11. OT1_Avg_Daily_OT
+ 12. OT1_Max_Daily_OT
+ 13. OT2_Chargeable_OT
+ 14. OT2_NonChargeable_OT
+ 15. OT2_Total_OT
+ 16. OT3_Chargeable_OT
+ 17. OT3_NonChargeable_OT
+ 18. OT3_Total_OT
+ 19. OT4_Chargeable_OT
+ 20. OT4_NonChargeable_OT
+ 21. OT4_Total_OT
+ 22. OT4_OT_Days
+ 23. OT4_Avg_Daily_OT
+ 24. OT4_Max_Daily_OT
+ 25. Leave_Opening_Balance
+ 26. Leave_Accrued
+ 27. Leave_Consumed
+ 28. Leave_Balance
+ 29. Leave_Future_Approved
+ 30. Leave_Balance_After_Future
+ 31. Leave_Carry_Forward
+ 32. Leave_Record_Count
+ 33. Leave_Type_Count
 
+======================================================================
+HIGH-CARDINALITY CATEGORICAL FEATURES
+======================================================================
+Designation: 378 unique values
+Cost Center: 668 unique values
+Site Cost Center: 668 unique values
+Site Name: 800 unique values
+Reporting Manager Code: 316 unique values
+Reporting Manager Name: 316 unique values
+Skip Level Manager Code: 124 unique values
+Skip Level Manager: 124 unique values
+Cost Code: 651 unique values
 
-# ==========================================================
-# 1. IDENTIFY DATE COLUMNS
-# ==========================================================
+======================================================================
+DATE COLUMN TYPES
+======================================================================
+Actual Join Date: datetime64[us]
+Group Join Date: datetime64[us]
+Year Of Service (Current DOJ): int64
+Year of Service (Group DOJ): int64
+Confirmation Date: datetime64[us]
+Effective Start Date: object
+Conf. Date (Period Master): datetime64[us]
+Birth Date: datetime64[us]
+Date Of Joined: datetime64[us]
+Created Date: datetime64[us]
 
-date_cols = [
-    c for c in model_features
-    if (
-        "date" in c.lower()
-        or "doj" in c.lower()
-        or "birth" in c.lower()
-    )
-]
-
-print("\nDATE COLUMNS:")
-for c in date_cols:
-    print(" -", c)
-
-
-# ==========================================================
-# 2. IDENTIFY CATEGORICAL COLUMNS CORRECTLY
-# ==========================================================
-
-categorical_cols = []
-
-for c in model_features:
-
-    dtype = model_base[c].dtype
-
-    if (
-        pd.api.types.is_object_dtype(dtype)
-        or pd.api.types.is_string_dtype(dtype)
-        or pd.api.types.is_categorical_dtype(dtype)
-    ):
-        categorical_cols.append(c)
-
-
-# Remove date columns from categorical list
-categorical_cols = [
-    c for c in categorical_cols
-    if c not in date_cols
-]
-
-
-# ==========================================================
-# 3. IDENTIFY NUMERIC COLUMNS
-# ==========================================================
-
-numeric_cols = [
-    c for c in model_features
-    if c not in categorical_cols
-    and c not in date_cols
-]
-
-
-# ==========================================================
-# 4. PRINT CORRECT COUNTS
-# ==========================================================
-
-print("\n" + "=" * 70)
-print("FEATURE TYPE SUMMARY")
-print("=" * 70)
-
-print("Total model features:", len(model_features))
-print("Date features:", len(date_cols))
-print("Categorical features:", len(categorical_cols))
-print("Numeric features:", len(numeric_cols))
-
-print("\nCATEGORICAL FEATURES:")
-for i, c in enumerate(categorical_cols, 1):
-    print(f"{i:3}. {c}")
-
-print("\nNUMERIC FEATURES:")
-for i, c in enumerate(numeric_cols, 1):
-    print(f"{i:3}. {c}")
-
-
-# ==========================================================
-# 5. CHECK HIGH-CARDINALITY CATEGORICAL FEATURES
-# ==========================================================
-
-print("\n" + "=" * 70)
-print("HIGH-CARDINALITY CATEGORICAL FEATURES")
-print("=" * 70)
-
-for c in categorical_cols:
-
-    unique_count = model_base[c].nunique(dropna=True)
-
-    if unique_count >= 100:
-        print(
-            f"{c}: "
-            f"{unique_count} unique values"
-        )
-
-
-# ==========================================================
-# 6. CHECK DATE TYPES
-# ==========================================================
-
-print("\n" + "=" * 70)
-print("DATE COLUMN TYPES")
-print("=" * 70)
-
-for c in date_cols:
-    print(
-        f"{c}: "
-        f"{model_base[c].dtype}"
-    )
-
-
-# ==========================================================
-# 7. CHECK MISSINGNESS FOR CATEGORICAL FEATURES
-# ==========================================================
-
-print("\n" + "=" * 70)
-print("CATEGORICAL MISSINGNESS")
-print("=" * 70)
-
-for c in categorical_cols:
-
-    missing_pct = model_base[c].isna().mean() * 100
-
-    print(
-        f"{c}: "
-        f"{missing_pct:.2f}% missing"
-    )
+======================================================================
+CATEGORICAL MISSINGNESS
+======================================================================
+Title: 0.00% missing
+City Name: 0.00% missing
+State Name: 0.00% missing
+Branch: 0.00% missing
+Site Branch: 0.00% missing
+Designation: 0.00% missing
+Department: 0.00% missing
+Cost Center: 0.00% missing
+Site Cost Center: 0.00% missing
+Site Name: 0.00% missing
+Grade: 0.00% missing
+Band: 0.00% missing
+Reason for Requirement: 34.77% missing
+Employee Category: 0.00% missing
+Reporting Manager Code: 0.00% missing
+Reporting Manager Name: 0.00% missing
+Skip Level Manager Code: 0.00% missing
+Skip Level Manager: 0.00% missing
+Point of Hire: 89.32% missing
+Point of Repatriation: 89.32% missing
+ESIC Flag: 0.60% missing
+PF Applicable: 5.76% missing
+PF Type: 0.00% missing
+Probation Status: 0.00% missing
+Source of Hire: 34.76% missing
+Bank Name: 0.70% missing
+Movement Type: 0.00% missing
+Cost Code: 0.00% missing
+Client Vertical: 0.00% missing
+Resident: 0.00% missing
+Wage Type: 0.05% missing
+TAX Regime: 0.18% missing
+Uniform Deduction: 0.00% missing
+Location: 67.53% missing
+Region Name: 67.53% missing
+Client Verticle: 67.53% missing
+C:\Users\veena.sharma\AppData\Local\Temp\ipykernel_12016\381583991.py:47: Pandas4Warning: is_categorical_dtype is deprecated and will be removed in a future version. Use isinstance(dtype, pd.CategoricalDtype) instead
+  or pd.api.types.is_categorical_dtype(dtype)
