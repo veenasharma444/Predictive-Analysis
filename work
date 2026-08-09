@@ -1,1 +1,134 @@
 
+# ============================================================
+# STEP 33: REBUILD MODEL INPUTS AFTER LEAKAGE REMOVAL
+# ============================================================
+
+print("=" * 60)
+print("STEP 33: REBUILD MODEL INPUTS")
+print("=" * 60)
+
+# ------------------------------------------------------------
+# 1. Separate target
+# ------------------------------------------------------------
+
+y_clean = model_base_clean["Attrition"].copy()
+
+X_clean = model_base_clean.drop(
+    columns=["Attrition"],
+    errors="ignore"
+).copy()
+
+# ------------------------------------------------------------
+# 2. Safety checks
+# ------------------------------------------------------------
+
+print("\nX shape:", X_clean.shape)
+print("y shape:", y_clean.shape)
+
+print("\nTarget distribution:")
+print(y_clean.value_counts())
+
+print("\nTarget percentage:")
+print(
+    y_clean.value_counts(normalize=True).mul(100).round(2)
+)
+
+# ------------------------------------------------------------
+# 3. Check for leakage / identity columns
+# ------------------------------------------------------------
+
+leakage_check = [
+    "Attrition",
+    "Resignation Date",
+    "Last Working Date",
+    "FNF Settlement Date",
+    "Employee Status",
+    "Leave Status",
+    "Effective End Date",
+    "Movement Type"
+]
+
+identity_check = [
+    "Employee Code",
+    "Employee_Code_Clean",
+    "_emp_code",
+    "First Name",
+    "Middle Name",
+    "Last Name",
+    "Employee Name",
+    "Official Email Address",
+    "Personal Email Address"
+]
+
+print("\nLeakage columns still present:")
+print([
+    col for col in leakage_check
+    if col in X_clean.columns
+])
+
+print("\nEmployee identity columns still present:")
+print([
+    col for col in identity_check
+    if col in X_clean.columns
+])
+
+# ------------------------------------------------------------
+# 4. Verify Movement Type is gone
+# ------------------------------------------------------------
+
+assert "Movement Type" not in X_clean.columns
+
+print("\nMovement Type present:", "Movement Type" in X_clean.columns)
+
+# ------------------------------------------------------------
+# 5. Separate feature types
+# ------------------------------------------------------------
+
+date_columns_clean = [
+    col for col in [
+        "Actual Join Date",
+        "Group Join Date",
+        "Confirmation Date",
+        "Effective Start Date",
+        "Conf. Date (Period Master)",
+        "Birth Date",
+        "Date Of Joined",
+        "Created Date"
+    ]
+    if col in X_clean.columns
+]
+
+categorical_columns_clean = X_clean.select_dtypes(
+    include=["object", "string", "category"]
+).columns.tolist()
+
+# Remove date columns from categorical list
+categorical_columns_clean = [
+    col for col in categorical_columns_clean
+    if col not in date_columns_clean
+]
+
+numeric_columns_clean = X_clean.select_dtypes(
+    include=["number", "bool"]
+).columns.tolist()
+
+print("\n" + "=" * 60)
+print("FEATURE TYPE SUMMARY")
+print("=" * 60)
+
+print("\nDate features:", len(date_columns_clean))
+for col in date_columns_clean:
+    print("-", col)
+
+print("\nCategorical features:", len(categorical_columns_clean))
+for col in categorical_columns_clean:
+    print("-", col)
+
+print("\nNumeric features:", len(numeric_columns_clean))
+for col in numeric_columns_clean:
+    print("-", col)
+
+print("\nTotal features accounted for:",
+      len(date_columns_clean)
+      + len(categorical_columns_clean)
+      + len(numeric_columns_clean))
