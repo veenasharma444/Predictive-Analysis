@@ -1,9 +1,141 @@
-
-# ==========================================================
-# STEP 17: INSPECT MODEL FEATURES
-# ==========================================================
-
-print("Total columns:", len(model_base.columns))
-
-for i, col in enumerate(model_base.columns, 1):
-    print(f"{i:3}. {col}")
+Total columns: 140
+  1. Group
+  2. Company Name
+  3. Employee Code
+  4. Title
+  5. First Name
+  6. Middle Name
+  7. Last Name
+  8. Employee Name
+  9. Gender
+ 10. Nationality
+ 11. Official Email Address
+ 12. Personal Email Address
+ 13. Resident Type
+ 14. Marital Status
+ 15. City Name
+ 16. State Name
+ 17. Branch
+ 18. Site Branch
+ 19. Division
+ 20. Designation
+ 21. Department
+ 22. Sub Department
+ 23. Cost Center
+ 24. Site Cost Center
+ 25. Site Name
+ 26. Grade
+ 27. Band
+ 28. Reason for Requirement
+ 29. Employee Category
+ 30. Employee Status
+ 31. Reporting Manager Code
+ 32. Reporting Manager Name
+ 33. Skip Level Manager Code
+ 34. Skip Level Manager
+ 35. Actual Join Date
+ 36. Group Join Date
+ 37. Resignation Date
+ 38. Year Of Service (Current DOJ)
+ 39. Year of Service (Group DOJ)
+ 40. Physical Disability
+ 41. Point of Hire
+ 42. Point of Repatriation
+ 43. ESIC Flag
+ 44. ESIC Number
+ 45. PF Applicable
+ 46. PF Type
+ 47. PF Number
+ 48. UAN Number
+ 49. FNF Settlement Date
+ 50. Probation Status
+ 51. Confirmation Date
+ 52. Source of Hire
+ 53. Preferred Name
+ 54. Dual Nationality
+ 55. Religion
+ 56. Agreement type
+ 57. Effective Start Date
+ 58. Effective End Date
+ 59. Employee Air Ticket
+ 60. Air Ticket Class
+ 61. Air Ticket frequency
+ 62. Blood Group
+ 63. Group Medical Insurance
+ 64. Confidential Profile Flag
+ 65. Confidential Profile
+ 66. Conf. Date (Period Master)
+ 67. 2nd Nationality
+ 68. Employer Notice Period
+ 69. Bank Name
+ 70. Movement Type
+ 71. PAN Number
+ 72. Aadhar Card No
+ 73. Account Number
+ 74. IFSC Code
+ 75. Personal Mobile Number
+ 76. Emergency Contact Number
+ 77. Father Name
+ 78. Birth Date
+ 79. Last Payable Days
+ 80. Last Working Date
+ 81. Cost Code
+ 82. Profit Code
+ 83. Client Vertical
+ 84. Permanent Address
+ 85. Current Address
+ 86. Correspondence Address
+ 87. Leave Status
+ 88. Resident
+ 89. Wage Type
+ 90. TAX Regime
+ 91. Uniform Deduction
+ 92. Process Name
+ 93. Employee_Code_Clean
+ 94. _emp_code
+ 95. Attrition
+ 96. Employee Status_form
+ 97. Designation_form
+ 98. Cost Center_form
+ 99. Gender_form
+100. Marital Status_form
+101. Location
+102. Region Name
+103. Site Name_form
+104. Client Verticle
+105. Date Of Joined
+106. Created Date
+107. Monthly Gross Salary
+108. Annual_Gross_Salary
+109. Tenure_Days
+110. Tenure_Years
+111. OT1_Chargeable_OT
+112. OT1_NonChargeable_OT
+113. OT1_Total_OT
+114. OT1_OT_Days
+115. OT1_Avg_Daily_OT
+116. OT1_Max_Daily_OT
+117. OT2_Chargeable_OT
+118. OT2_NonChargeable_OT
+119. OT2_Total_OT
+120. OT3_Chargeable_OT
+121. OT3_NonChargeable_OT
+122. OT3_Total_OT
+123. OT4_Chargeable_OT
+124. OT4_NonChargeable_OT
+125. OT4_Total_OT
+126. OT4_OT_Days
+127. OT4_Avg_Daily_OT
+128. OT4_Max_Daily_OT
+129. Leave_Opening_Balance
+130. Leave_Accrued
+131. Leave_Consumed
+132. Leave_Adjustment
+133. Leave_Lapse
+134. Leave_Balance
+135. Leave_Future_Approved
+136. Leave_Balance_After_Future
+137. Leave_Encashment
+138. Leave_Carry_Forward
+139. Leave_Record_Count
+140. Leave_Type_Count
