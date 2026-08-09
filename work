@@ -1,1 +1,126 @@
+# ============================================================
+# STEP 45: ATTRITION PROBABILITY THRESHOLD ANALYSIS
+# ============================================================
 
+from sklearn.metrics import (
+    precision_score,
+    recall_score,
+    f1_score
+)
+
+print("=" * 60)
+print("STEP 45: ATTRITION PROBABILITY THRESHOLD ANALYSIS")
+print("=" * 60)
+
+thresholds = [
+    0.50,
+    0.40,
+    0.30,
+    0.25,
+    0.20,
+    0.15,
+    0.10,
+    0.05
+]
+
+threshold_results = []
+
+for threshold in thresholds:
+
+    y_pred_threshold = (
+        y_pred_proba >= threshold
+    ).astype(int)
+
+    precision = precision_score(
+        y_test,
+        y_pred_threshold,
+        zero_division=0
+    )
+
+    recall = recall_score(
+        y_test,
+        y_pred_threshold,
+        zero_division=0
+    )
+
+    f1 = f1_score(
+        y_test,
+        y_pred_threshold,
+        zero_division=0
+    )
+
+    predicted_attrition = int(
+        y_pred_threshold.sum()
+    )
+
+    threshold_results.append({
+        "Threshold": threshold,
+        "Predicted_Attrition": predicted_attrition,
+        "Precision": precision,
+        "Recall": recall,
+        "F1_Score": f1
+    })
+
+
+threshold_results_df = pd.DataFrame(
+    threshold_results
+)
+
+
+print("\n" + "=" * 60)
+print("THRESHOLD COMPARISON")
+print("=" * 60)
+
+print(
+    threshold_results_df.to_string(
+        index=False,
+        formatters={
+            "Precision": "{:.4f}".format,
+            "Recall": "{:.4f}".format,
+            "F1_Score": "{:.4f}".format
+        }
+    )
+)
+
+
+# ------------------------------------------------------------
+# Best F1 threshold
+# ------------------------------------------------------------
+
+best_f1_row = threshold_results_df.loc[
+    threshold_results_df["F1_Score"].idxmax()
+]
+
+print("\n" + "=" * 60)
+print("BEST F1 THRESHOLD")
+print("=" * 60)
+
+print(
+    f"Threshold           : "
+    f"{best_f1_row['Threshold']:.2f}"
+)
+
+print(
+    f"Predicted Attrition : "
+    f"{int(best_f1_row['Predicted_Attrition'])}"
+)
+
+print(
+    f"Precision           : "
+    f"{best_f1_row['Precision']:.4f}"
+)
+
+print(
+    f"Recall              : "
+    f"{best_f1_row['Recall']:.4f}"
+)
+
+print(
+    f"F1 Score            : "
+    f"{best_f1_row['F1_Score']:.4f}"
+)
+
+
+print("\n" + "=" * 60)
+print("STEP 45 SUCCESS")
+print("=" * 60)
