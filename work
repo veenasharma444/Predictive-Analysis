@@ -1,1 +1,11 @@
 
+print("Prediction data shape:", prediction_df.shape)
+
+print("\nPrediction first 5 rows:")
+display(prediction_df[['Employee_Row_ID']].head())
+
+print("\nEmployee master first 5 codes:")
+display(employee_master[['_emp_code', 'Employee Name']].head())
+
+print("\nEmployee master index:")
+print(employee_master.index[:5])
