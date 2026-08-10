@@ -1,2 +1,36 @@
-employee_master columns:
-['Group', 'Company Name', 'Employee Code', 'Title', 'First Name', 'Middle Name', 'Last Name', 'Employee Name', 'Gender', 'Nationality', 'Official Email Address', 'Personal Email Address', 'Resident Type', 'Marital Status', 'City Name', 'State Name', 'Branch', 'Site Branch', 'Division', 'Designation', 'Department', 'Sub Department', 'Cost Center', 'Site Cost Center', 'Site Name', 'Grade', 'Band', 'Reason for Requirement', 'Employee Category', 'Employee Status', 'Reporting Manager Code', 'Reporting Manager Name', 'Skip Level Manager Code', 'Skip Level Manager', 'Actual Join Date', 'Group Join Date', 'Resignation Date', 'Year Of Service (Current DOJ)', 'Year of Service (Group DOJ)', 'Physical Disability', 'Point of Hire', 'Point of Repatriation', 'ESIC Flag', 'ESIC Number', 'PF Applicable', 'PF Type', 'PF Number', 'UAN Number', 'FNF Settlement Date', 'Probation Status', 'Confirmation Date', 'Source of Hire', 'Preferred Name', 'Dual Nationality', 'Religion', 'Agreement type', 'Effective Start Date', 'Effective End Date', 'Employee Air Ticket', 'Air Ticket Class', 'Air Ticket frequency', 'Blood Group', 'Group Medical Insurance', 'Confidential Profile Flag', 'Confidential Profile', 'Conf. Date (Period Master)', '2nd Nationality', 'Employer Notice Period', 'Bank Name', 'Movement Type', 'PAN Number', 'Aadhar Card No', 'Account Number', 'IFSC Code', 'Personal Mobile Number', 'Emergency Contact Number', 'Father Name', 'Birth Date', 'Last Payable Days', 'Last Working Date', 'Cost Code', 'Profit Code', 'Client Vertical', 'Permanent Address', 'Current Address', 'Correspondence Address', 'Leave Status', 'Resident', 'Wage Type', 'TAX Regime', 'Uniform Deduction', 'Process Name', 'Employee_Code_Clean', '_emp_code']
+                              Group                      Company Name  \
+0  Property Solutions India Pvt Ltd  Property Solutions India Pvt Ltd   
+1  Property Solutions India Pvt Ltd  Property Solutions India Pvt Ltd   
+2  Property Solutions India Pvt Ltd  Property Solutions India Pvt Ltd   
+3  Property Solutions India Pvt Ltd  Property Solutions India Pvt Ltd   
+4  Property Solutions India Pvt Ltd  Property Solutions India Pvt Ltd   
+
+  Employee Code Title First Name Middle Name  Last Name  \
+0       '566137   Mr.   Kaustubh    Dattaram      Patil   
+1       '534669   Mr.    Dibakar         NaN  Pattanaik   
+2       '560618   Mr.       Anil      Tanaji     Dubole   
+3        '48681   Mr.   Sudhakar       Anand    Hankare   
+4        '62969   Mr.    Shriram    Seetaram     Kanoje   
+
+             Employee Name Gender Nationality  ... Current Address  \
+0  Kaustubh Dattaram Patil   Male       India  ...                   
+1        Dibakar Pattanaik   Male       India  ...                   
+2       Anil Tanaji Dubole   Male       India  ...                   
+3   Sudhakar Anand Hankare   Male       India  ...                   
+4  Shriram Seetaram Kanoje   Male       India  ...                   
+
+  Correspondence Address Leave Status        Resident Wage Type    TAX Regime  \
+0                                 NaN   Site Contract   Monthly  New Tax Slab   
+1                                 NaN   Site Contract   Monthly  New Tax Slab   
+2                                 NaN   Site Contract   Monthly  New Tax Slab   
+3                                 NaN  Site Permanent   Monthly  New Tax Slab   
+4                                 NaN   Site Contract   Monthly  New Tax Slab   
+
+  Uniform Deduction Process Name Employee_Code_Clean _emp_code  
+0                NO          NaN              566137    566137  
+1                NO          NaN              534669    534669  
+2                NO          NaN              560618    560618  
+3                NO          NaN               48681     48681  
+4                NO          NaN               62969     62969  
+
+[5 rows x 94 columns]
