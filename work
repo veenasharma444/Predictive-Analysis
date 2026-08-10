@@ -1,1 +1,83 @@
+# ============================================================
+# STEP 58: FINAL EMPLOYEE-LEVEL RESIGNATION OUTPUT
+# ============================================================
 
+# Select the important employee-level prediction columns
+final_columns = [
+    "Employee_Row_ID",
+    "Employee Code",
+    "Employee Name",
+    "Designation",
+    "Department",
+    "Reporting Manager Name",
+    "Site Name",
+    "Cost Center",
+    "Client Vertical",
+    "Monthly Gross Salary",
+    "Annual_Gross_Salary",
+    "Tenure_Years",
+    "Age_Years",
+    "OT1_Total_OT",
+    "OT2_Total_OT",
+    "OT3_Total_OT",
+    "OT4_Total_OT",
+    "Leave_Balance",
+    "Leave_Consumed",
+    "Leave_Future_Approved",
+    "Salary_Data_Available",
+    "Leave_Data_Available",
+    "Resignation_Probability_%",
+    "Risk_Category"
+]
+
+# Keep only columns that actually exist
+final_columns = [
+    col for col in final_columns
+    if col in prediction_df.columns
+]
+
+final_resignation_output = prediction_df[final_columns].copy()
+
+# Sort highest resignation risk first
+final_resignation_output = final_resignation_output.sort_values(
+    by="Resignation_Probability_%",
+    ascending=False
+).reset_index(drop=True)
+
+# Add final risk rank
+final_resignation_output["Risk_Rank"] = (
+    final_resignation_output["Resignation_Probability_%"]
+    .rank(method="first", ascending=False)
+    .astype(int)
+)
+
+# Save final CSV
+final_file = "FINAL_EMPLOYEE_LEVEL_RESIGNATION_PREDICTION.csv"
+
+final_resignation_output.to_csv(
+    final_file,
+    index=False
+)
+
+# Final verification
+print("=" * 70)
+print("FINAL EMPLOYEE-LEVEL RESIGNATION OUTPUT")
+print("=" * 70)
+
+print("Total employees:", len(final_resignation_output))
+print("Total columns:", len(final_resignation_output.columns))
+
+print("\nRisk distribution:")
+print(final_resignation_output["Risk_Category"].value_counts())
+
+print("\nMissing Employee Codes:",
+      final_resignation_output["Employee Code"].isna().sum())
+
+print("Missing Employee Names:",
+      final_resignation_output["Employee Name"].isna().sum())
+
+print("\nFile created:")
+print(final_file)
+
+print("\nTop 10 highest-risk employees:")
+display(final_resignation_output.head(10))
