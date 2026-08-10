@@ -1,1 +1,45 @@
+# ============================================================
+# EMPLOYEE NAME + CODE MAPPING
+# ============================================================
 
+# Employee mapping from model_base
+employee_mapping = model_base[
+    ["Employee Code", "Employee Name"]
+].copy()
+
+# Employee_Row_ID corresponds to original employee row
+employee_mapping["Employee_Row_ID"] = range(1, len(employee_mapping) + 1)
+
+# Remove existing employee columns if any
+prediction_df = prediction_df.drop(
+    columns=["Employee Code", "Employee Name"],
+    errors="ignore"
+)
+
+# Map employee details
+prediction_df = prediction_df.merge(
+    employee_mapping,
+    on="Employee_Row_ID",
+    how="left"
+)
+
+print("Final prediction shape:", prediction_df.shape)
+
+# Show available important columns
+display(
+    prediction_df[
+        [
+            "Employee_Row_ID",
+            "Employee Code",
+            "Employee Name",
+            "Resignation_Probability_%",
+            "Risk_Category"
+        ]
+    ].head(20)
+)
+
+print("\nMissing Employee Codes:",
+      prediction_df["Employee Code"].isna().sum())
+
+print("Missing Employee Names:",
+      prediction_df["Employee Name"].isna().sum())
