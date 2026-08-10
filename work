@@ -1,11 +1,1 @@
 
-# Find DataFrames containing the final prediction output
-
-import pandas as pd
-
-print("DataFrames currently available:")
-print("=" * 60)
-
-for name, obj in list(globals().items()):
-    if isinstance(obj, pd.DataFrame):
-        print(f"{name} -> {obj.shape}")
