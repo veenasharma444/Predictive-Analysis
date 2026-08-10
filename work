@@ -1,1 +1,21 @@
 
+# Check employee-identification columns in the 20,468-row dataframes
+
+for name, obj in list(globals().items()):
+    if isinstance(obj, pd.DataFrame) and len(obj) == 20468:
+        print("\n" + "=" * 70)
+        print("DATAFRAME:", name)
+        print("SHAPE:", obj.shape)
+
+        id_cols = [
+            c for c in obj.columns
+            if any(x in c.lower() for x in [
+                "employee", "emp_code", "emp id", "emp_id", "name"
+            ])
+        ]
+
+        print("Employee-related columns:")
+        print(id_cols)
+
+        if id_cols:
+            display(obj[id_cols].head())
