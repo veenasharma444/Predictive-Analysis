@@ -1,83 +1,26 @@
-# ============================================================
-# STEP 58: FINAL EMPLOYEE-LEVEL RESIGNATION OUTPUT
-# ============================================================
+Dear Veena
+Shared data is not clear.
+Is there any screen/dashboard from where we can see the details
 
-# Select the important employee-level prediction columns
-final_columns = [
-    "Employee_Row_ID",
-    "Employee Code",
-    "Employee Name",
-    "Designation",
-    "Department",
-    "Reporting Manager Name",
-    "Site Name",
-    "Cost Center",
-    "Client Vertical",
-    "Monthly Gross Salary",
-    "Annual_Gross_Salary",
-    "Tenure_Years",
-    "Age_Years",
-    "OT1_Total_OT",
-    "OT2_Total_OT",
-    "OT3_Total_OT",
-    "OT4_Total_OT",
-    "Leave_Balance",
-    "Leave_Consumed",
-    "Leave_Future_Approved",
-    "Salary_Data_Available",
-    "Leave_Data_Available",
-    "Resignation_Probability_%",
-    "Risk_Category"
-]
+Also answer below my queries.
 
-# Keep only columns that actually exist
-final_columns = [
-    col for col in final_columns
-    if col in prediction_df.columns
-]
+What is the overall accuracy of the attrition prediction model?
+Which evaluation metrics were used (Precision, Recall, F1-Score, AUC, etc.)?
+How was the model validated?
+How are the resignation risk categories (Low, Medium, High) defined?
+What probability threshold is used to classify an employee as high-risk?
+How should HR interpret the probability percentage?
+Is there a recommended action for different risk levels?
+What are the top factors contributing to attrition risk?
+Does the model identify specific reasons behind each employee's risk score?
+Can we see feature importance or key drivers for individual predictions?
+What historical period was used to train the model?
+Which employee attributes were considered in the prediction?
+Were employees on long leave, probation, or recently joined employees treated differently?
+How is missing or incomplete employee data handled?
+How frequently should the model be refreshed or rerun?
+What is the expected prediction horizon (30, 60, or 90 days)?
+How should HR teams use these predictions for retention planning?
+Has the model been tested across different departments, locations, and grades?
 
-final_resignation_output = prediction_df[final_columns].copy()
-
-# Sort highest resignation risk first
-final_resignation_output = final_resignation_output.sort_values(
-    by="Resignation_Probability_%",
-    ascending=False
-).reset_index(drop=True)
-
-# Add final risk rank
-final_resignation_output["Risk_Rank"] = (
-    final_resignation_output["Resignation_Probability_%"]
-    .rank(method="first", ascending=False)
-    .astype(int)
-)
-
-# Save final CSV
-final_file = "FINAL_EMPLOYEE_LEVEL_RESIGNATION_PREDICTION.csv"
-
-final_resignation_output.to_csv(
-    final_file,
-    index=False
-)
-
-# Final verification
-print("=" * 70)
-print("FINAL EMPLOYEE-LEVEL RESIGNATION OUTPUT")
-print("=" * 70)
-
-print("Total employees:", len(final_resignation_output))
-print("Total columns:", len(final_resignation_output.columns))
-
-print("\nRisk distribution:")
-print(final_resignation_output["Risk_Category"].value_counts())
-
-print("\nMissing Employee Codes:",
-      final_resignation_output["Employee Code"].isna().sum())
-
-print("Missing Employee Names:",
-      final_resignation_output["Employee Name"].isna().sum())
-
-print("\nFile created:")
-print(final_file)
-
-print("\nTop 10 highest-risk employees:")
-display(final_resignation_output.head(10))
+ 
