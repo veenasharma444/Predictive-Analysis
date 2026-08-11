@@ -1,26 +1,2 @@
-Dear Veena
-Shared data is not clear.
-Is there any screen/dashboard from where we can see the details
-
-Also answer below my queries.
-
-What is the overall accuracy of the attrition prediction model?
-Which evaluation metrics were used (Precision, Recall, F1-Score, AUC, etc.)?
-How was the model validated?
-How are the resignation risk categories (Low, Medium, High) defined?
-What probability threshold is used to classify an employee as high-risk?
-How should HR interpret the probability percentage?
-Is there a recommended action for different risk levels?
-What are the top factors contributing to attrition risk?
-Does the model identify specific reasons behind each employee's risk score?
-Can we see feature importance or key drivers for individual predictions?
-What historical period was used to train the model?
-Which employee attributes were considered in the prediction?
-Were employees on long leave, probation, or recently joined employees treated differently?
-How is missing or incomplete employee data handled?
-How frequently should the model be refreshed or rerun?
-What is the expected prediction horizon (30, 60, or 90 days)?
-How should HR teams use these predictions for retention planning?
-Has the model been tested across different departments, locations, and grades?
-
- 
+Shape: (20486, 92)
+Columns: ['Group', 'Company Name', 'Employee Code', 'Title', 'First Name', 'Middle Name', 'Last Name', 'Employee Name', 'Gender', 'Nationality', 'Official Email Address', 'Personal Email Address', 'Resident Type', 'Marital Status', 'City Name', 'State Name', 'Branch', 'Site Branch', 'Division', 'Designation', 'Department', 'Sub Department', 'Cost Center', 'Site Cost Center', 'Site Name', 'Grade', 'Band', 'Reason for Requirement', 'Employee Category', 'Employee Status', 'Reporting Manager Code', 'Reporting Manager Name', 'Skip Level Manager Code', 'Skip Level Manager', 'Actual Join Date', 'Group Join Date', 'Resignation Date', 'Year Of Service (Current DOJ)', 'Year of Service (Group DOJ)', 'Physical Disability', 'Point of Hire', 'Point of Repatriation', 'ESIC Flag', 'ESIC Number', 'PF Applicable', 'PF Type', 'PF Number', 'UAN Number', 'FNF Settlement Date', 'Probation Status', 'Confirmation Date', 'Source of Hire', 'Preferred Name', 'Dual Nationality', 'Religion', 'Agreement type', 'Effective Start Date', 'Effective End Date', 'Employee Air Ticket', 'Air Ticket Class', 'Air Ticket frequency', 'Blood Group', 'Group Medical Insurance', 'Confidential Profile Flag', 'Confidential Profile', 'Conf. Date (Period Master)', '2nd Nationality', 'Employer Notice Period', 'Bank Name', 'Movement Type', 'PAN Number', 'Aadhar Card No', 'Account Number', 'IFSC Code', 'Personal Mobile Number', 'Emergency Contact Number', 'Father Name', 'Birth Date', 'Last Payable Days', 'Last Working Date', 'Cost Code', 'Profit Code', 'Client Vertical', 'Permanent Address', 'Current Address', 'Correspondence Address', 'Leave Status', 'Resident', 'Wage Type', 'TAX Regime', 'Uniform Deduction', 'Process Name']
